@@ -1,0 +1,3 @@
+stampa('la somma di ' & a & ' e ' & b ' incrementata di ' & c & ' è ' & taglia);
+
+
