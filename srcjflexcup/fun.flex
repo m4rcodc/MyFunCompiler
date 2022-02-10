@@ -25,17 +25,20 @@ WhiteSpace= {LineTerminator} | [ \t\f]
 digit = [0-9]
 number = {digit}+
 Integer_Const = {number}
-Real_Const = [+-]?{number}(\.{number})?
+Real_Const = [0-9]+\.[0-9]+(e-?[0-9]+)?
 Identifier = [$_A-Za-z][$_@A-Za-z0-9]*
-StringInit = \"|\'
 CommentInit = \#|\/\/
 CommentBlock = \#\*
+StringSingleQuote = \'
+StringDoubleQuote = \"
 
 
 
 %state STRING
 %state COMMENT
 %state COMMENTBLOCK
+%state STRING_DOUBLE_QUOTE
+%state STRING_SINGLE_QUOTE
 
 %%
 
@@ -79,11 +82,12 @@ CommentBlock = \#\*
 "and" {return new Symbol(sym.AND);}
 "or" {return new Symbol(sym.OR);}
 "not" {return new Symbol(sym.NOT);}
-"true" {return new Symbol(sym.TRUE);}
-"false" {return new Symbol(sym.FALSE);}
+"true" {return new Symbol(sym.BOOL_CONST,Boolean.parseBoolean(yytext()));}
+"false" {return new Symbol(sym.BOOL_CONST,Boolean.parseBoolean(yytext()));}
 ";" {return new Symbol(sym.SEMI);}
 "," {return new Symbol(sym.COMMA);}
 "return" {return new Symbol(sym.RETURN);}
+"out" {return new Symbol(sym.OUT);}
 "@" {return new Symbol(sym.OUTPAR);}
 
 /*Whitespace*/
@@ -93,10 +97,11 @@ CommentBlock = \#\*
 {Integer_Const} { return new Symbol(sym.INTEGER_CONST, Integer.parseInt(yytext())); }
 
 /*RealConst*/
-{Real_Const} { return new Symbol(sym.REAL_CONST, Float.parseFloat(yytext())); }
+{Real_Const} { return new Symbol(sym.REAL_CONST, yytext()); }
 
 /*StartString*/
-{StringInit} { string.setLength(0); yybegin(STRING); }
+{StringDoubleQuote} { string.setLength(0); yybegin(STRING_DOUBLE_QUOTE); }
+{StringSingleQuote} { string.setLength(0); yybegin(STRING_SINGLE_QUOTE); }
 
 /*Identifier*/
 {Identifier} { return new Symbol(sym.ID, yytext()); }
@@ -110,16 +115,38 @@ CommentBlock = \#\*
 
 }
 
-<STRING>  {
-/*String case*/
+<STRING_DOUBLE_QUOTE> {
 
-\" { yybegin(YYINITIAL); return new Symbol(sym.STRING_CONST,string.toString());}
+\"                                { yybegin(YYINITIAL);
+                                    return new Symbol(sym.STRING_CONST, string.toString()); }
 
-\' { yybegin(YYINITIAL); return new Symbol(sym.STRING_CONST,string.toString());}
+[^\n\r\"\\]+                      { string.append(yytext()); }
 
-[^\n\r\"\']  { string.append(yytext());}
-[\n\r]       { /* nothing */ }
-<<EOF>> { return new Symbol(sym.EOF,"Stringa costante non completata"); }
+\\t                               { string.append("\\t"); }
+\\n                               { string.append("\\n"); }
+\\r                               { string.append("\\r"); }
+\\\"                              { string.append("\""); }
+\\                                { string.append("\\"); }
+
+<<EOF>>                           { throw new Error("Illegal line end in string literal"); }
+
+}
+
+<STRING_SINGLE_QUOTE> {
+
+\'                                 { yybegin(YYINITIAL);
+                                     return new Symbol(sym.STRING_CONST, string.toString()); }
+
+[^\n\r'\"\\]+                     { string.append(yytext()); }
+
+\\t                               { string.append("\\t"); }
+\\n                               { string.append("\\n"); }
+\\r                               { string.append("\\r"); }
+\\'                               { string.append("'"); }
+\"                                { string.append("\""); }
+\\                                { string.append("\\"); }
+
+<<EOF>>                           { throw new Error("Illegal line end in string literal"); }
 
 }
 
@@ -135,7 +162,7 @@ CommentBlock = \#\*
 [^\#] { }
 \# {yybegin(YYINITIAL);}
 
-<<EOF>> { return new Symbol(sym.EOF,"Commento non completato");}
+<<EOF>> { return new Symbol(sym.EOF,"Unclosed comment");}
 
 }
 

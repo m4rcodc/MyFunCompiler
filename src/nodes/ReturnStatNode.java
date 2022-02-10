@@ -1,10 +1,9 @@
 package nodes;
 
-import Visitor.ISyntaxVisitable;
-import Visitor.ISyntaxVisitor;
+import Visitor.*;
 import org.w3c.dom.Element;
 
-public class ReturnStatNode implements StatNode, ISyntaxVisitable {
+public class ReturnStatNode implements StatNode, ISyntaxVisitable, ISemanticVisitable, ICVisitable {
 
     public String name = null;
     public ExprNode expr = null;
@@ -18,6 +17,13 @@ public class ReturnStatNode implements StatNode, ISyntaxVisitable {
     public Element accept(ISyntaxVisitor v) {
         return v.visit(this);
     }
+
+    @Override
+    public void accept(ISemanticVisitor v) {  v.visit(this);}
+
+    @Override
+    public void accept(ICVisitor v) { v.visit(this); }
+
 }
 
 

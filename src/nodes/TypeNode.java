@@ -1,10 +1,9 @@
 package nodes;
 
-import Visitor.ISyntaxVisitable;
-import Visitor.ISyntaxVisitor;
+import Visitor.*;
 import org.w3c.dom.Element;
 
-public class TypeNode implements ISyntaxVisitable {
+public class TypeNode implements ISyntaxVisitable, ISemanticVisitable, ICVisitable {
 
     public String name = null;
     public String type = null;
@@ -15,11 +14,16 @@ public class TypeNode implements ISyntaxVisitable {
         this.type = type;
     }
 
+
+
     @Override
     public Element accept(ISyntaxVisitor v) {
         return v.visit(this);
     }
 
+    @Override
+    public void accept(ISemanticVisitor v) { v.visit(this); }
 
-
+    @Override
+    public void accept(ICVisitor v) { v.visit(this); }
 }

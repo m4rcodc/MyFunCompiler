@@ -1,11 +1,14 @@
 package nodes;
 
-import Visitor.ISyntaxVisitable;
-import Visitor.ISyntaxVisitor;
+import Visitor.*;
 import leafs.LeafID;
 import org.w3c.dom.Element;
+import support.SymbolTable;
+import support.ValueType;
 
-public class ExprNode implements ISyntaxVisitable {
+import java.util.ArrayList;
+
+public class ExprNode implements ISyntaxVisitable, ISemanticVisitable, ICVisitable {
 
     public String name = null;
     public ModeParNode mod;
@@ -37,10 +40,63 @@ public class ExprNode implements ISyntaxVisitable {
         value2 = null;
     }
 
+    public ExprNode(){
+
+    }
+
+    //Semantic part
+    public ArrayList<ValueType> types = new ArrayList<>();
+
+    //Mi server per gestire l'expr di CallFunNode
+    public void setTypes(ArrayList t) {
+        try {
+            for (int i = 0; i < t.size(); i++) {
+                if (t.get(i) instanceof String)
+                    this.types.add(SymbolTable.StringToType((String) t.get(i)));
+                else this.types.add((ValueType) t.get(i));
+            }
+        } catch (Exception e) {
+            System.exit(0);
+            e.printStackTrace();
+        }
+    }
+
+
+    public void setType(String t) {
+        try {
+            this.types.add(SymbolTable.StringToType(t));
+        } catch (Exception e) {
+            System.exit(0);
+            e.printStackTrace();
+        }
+    }
+
+    public void setType(ValueType t) {
+        try {
+            this.types.add(t);
+        } catch (Exception e) {
+            System.exit(0);
+            e.printStackTrace();
+        }
+    }
+
+    public void setMode(String mod) {
+
+        ModeParNode in = new ModeParNode(mod);
+        this.mod = in;
+
+    }
+
 
     @Override
     public Element accept(ISyntaxVisitor v) {
         return v.visit(this);
     }
+
+    @Override
+    public void accept(ISemanticVisitor v) { v.visit(this); }
+
+    @Override
+    public void accept(ICVisitor v) { v.visit(this); }
 
 }

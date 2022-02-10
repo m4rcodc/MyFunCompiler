@@ -129,17 +129,10 @@ public class SyntaxVisitor implements ISyntaxVisitor{
                 constElement.appendChild(((LeafRealConst)constNode.value1).accept(this));
             if(constNode.value1 instanceof LeafStringConst)
                 constElement.appendChild(((LeafStringConst)constNode.value1).accept(this));
+            if(constNode.value1 instanceof LeafBool)
+                constElement.appendChild(((LeafBool)constNode.value1).accept(this));
 
             return constElement;
-        }
-
-        @Override
-        public Element visit(Bool_ConstNode bool_constNode){
-            Element bool_constElement = doc.createElement(bool_constNode.name);
-
-            bool_constElement.appendChild((bool_constNode.leaf).accept(this));
-
-            return bool_constElement;
         }
 
         @Override

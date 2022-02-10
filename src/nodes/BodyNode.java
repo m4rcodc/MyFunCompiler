@@ -5,7 +5,7 @@ import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 
-public class BodyNode implements ISyntaxVisitable {
+public class BodyNode implements ISyntaxVisitable, ISemanticVisitable, ICVisitable {
 
     public String name = null;
     public ArrayList<VarDeclNode> vardecl = null;
@@ -21,5 +21,11 @@ public class BodyNode implements ISyntaxVisitable {
     public Element accept(ISyntaxVisitor v) {
         return v.visit(this);
     }
+
+    @Override
+    public void accept(ISemanticVisitor v) { v.visit(this); }
+
+    @Override
+    public void accept(ICVisitor v) { v.visit(this); }
 
 }

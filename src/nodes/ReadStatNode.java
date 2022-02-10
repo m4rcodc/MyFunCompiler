@@ -1,13 +1,12 @@
 package nodes;
 
-import Visitor.ISyntaxVisitable;
-import Visitor.ISyntaxVisitor;
+import Visitor.*;
 import leafs.LeafID;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 
-public class ReadStatNode implements StatNode, ISyntaxVisitable {
+public class ReadStatNode implements StatNode, ISyntaxVisitable, ISemanticVisitable, ICVisitable {
 
     public String name = null;
     public ArrayList<LeafID> idlist = null;
@@ -29,4 +28,10 @@ public class ReadStatNode implements StatNode, ISyntaxVisitable {
     public Element accept(ISyntaxVisitor v) {
         return v.visit(this);
     }
+
+    @Override
+    public void accept(ISemanticVisitor v) { v.visit(this); }
+
+    @Override
+    public void accept(ICVisitor v) { v.visit(this); }
 }

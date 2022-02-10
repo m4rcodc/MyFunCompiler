@@ -1,3 +1,1 @@
-stampa('la somma di ' & a & ' e ' & b ' incrementata di ' & c & ' è ' & taglia);
-
-
+var c := 1, d := 2;

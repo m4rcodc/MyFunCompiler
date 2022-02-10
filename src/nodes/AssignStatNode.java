@@ -4,7 +4,7 @@ import Visitor.*;
 import leafs.LeafID;
 import org.w3c.dom.Element;
 
-public class AssignStatNode implements StatNode, ISyntaxVisitable{
+public class AssignStatNode implements StatNode, ISyntaxVisitable, ISemanticVisitable, ICVisitable {
 
     public String name=null;
     public LeafID leaf=null;
@@ -20,4 +20,10 @@ public class AssignStatNode implements StatNode, ISyntaxVisitable{
     public Element accept(ISyntaxVisitor v) {
         return v.visit(this);
     }
+
+    @Override
+    public void accept(ISemanticVisitor v) { v.visit(this) ;}
+
+    @Override
+    public void accept(ICVisitor v) { v.visit(this); }
 }

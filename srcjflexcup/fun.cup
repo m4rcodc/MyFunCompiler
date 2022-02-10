@@ -7,18 +7,19 @@ import Visitor.*;
 //Terminali
 terminal MAIN,END,SEMI,VAR,INTEGER,BOOL,REAL,STRING,COMMA,ASSIGN,RPAR,LPAR,FUN,COLON,
          ELSE,WHILE,LOOP,READ,WRITELN,WRITET,WRITEB,WRITE,PLUS,MINUS,TIMES,DIV,DIVINT,
-         AND,POW,STR_CONCAT,OR,GT,GE,LT,LE,EQ,NE,NOT,IF,THEN,RETURN,OUTPAR;
-terminal Boolean TRUE, FALSE;
+         AND,POW,STR_CONCAT,OR,GT,GE,LT,LE,EQ,NE,NOT,IF,THEN,RETURN,OUTPAR,OUT;
+//terminal Boolean TRUE, FALSE;
 terminal Integer INTEGER_CONST;
-terminal Float REAL_CONST;//Problem
-terminal String STRING_CONST, ID;
+terminal Boolean BOOL_CONST;
+//terminal Float REAL_CONST;//Problem
+terminal String STRING_CONST, ID, REAL_CONST;
 
 terminal _uminus;
 
 //Non terminali
 nonterminal Program,VarDeclList,FunList,Main,VarDecl,StatList,Fun,IdListInit,IdListInitObbl,
             Type,Expr,Const,ParDecl,Stat,IfStat,WhileStat,ReadStat,IdList,ExprList,
-            WriteStat,AssignStat,CallFun,Else,ParamDeclList,NonEmptyParamDeclList,Bool_Const;
+            WriteStat,AssignStat,CallFun,Else,ParamDeclList,NonEmptyParamDeclList,ReturnStat;
 
 //Precedenze
 precedence left OR;
@@ -62,12 +63,14 @@ IdListInitObbl ::= ID:id ASSIGN Const:c {: ArrayList<IdInitNode> l = new ArrayLi
 ;
 Const ::= INTEGER_CONST:val {:RESULT = new ConstNode("INTEGER_CONST", new LeafIntegerConst(val)); :}
           | REAL_CONST:val {:RESULT = new ConstNode("REAL_CONST", new LeafRealConst(val)); :}
-          | Bool_Const:boolconst {:RESULT = (Bool_ConstNode) boolconst; :}
+          | BOOL_CONST:val {:RESULT = new ConstNode("BOOL_CONST", new LeafBool(val)); :}
           | STRING_CONST:val {:RESULT = new ConstNode("STRING_CONST", new LeafStringConst(val)); :}
 ;
+/*
 Bool_Const ::= TRUE:val {:RESULT = new Bool_ConstNode("TRUE", new LeafBool(val)); :}
                | FALSE:val {:RESULT = new Bool_ConstNode("FALSE", new LeafBool(val)); :}
 ;
+*/
 Fun ::= FUN ID:id LPAR ParamDeclList:pardecllist RPAR COLON Type:type
 		VarDeclList:vardeclist StatList:statlist END FUN SEMI {: BodyNode b = new BodyNode("BodyOp",(ArrayList<VarDeclNode>)vardeclist,(StatListNode) statlist);
 		                                                        LeafID leafId = new LeafID(id);
@@ -84,7 +87,7 @@ NonEmptyParamDeclList ::= ParDecl:pardecl {: ArrayList<ParDeclNode> l = new Arra
 	| NonEmptyParamDeclList:nepDeclist COMMA ParDecl:pardecl {: ((ArrayList<ParDeclNode>) nepDeclist).add((ParDeclNode) pardecl); RESULT = nepDeclist; :}//?
 ;
 ParDecl ::= Type:type ID:id {:RESULT = new ParDeclNode("ParDeclOp", new ModeParNode("in"),(TypeNode) type, new LeafID(id)); :}
-	| OUTPAR Type:type ID:id {:RESULT = new ParDeclNode("ParDeclOp",new ModeParNode("out"),(TypeNode) type, new LeafID(id)); :}
+	| OUT Type:type ID:id {:RESULT = new ParDeclNode("ParDeclOp",new ModeParNode("out"),(TypeNode) type, new LeafID(id)); :}
 ;
 StatList ::= /* empty */ {: ArrayList<StatNode> tmp_list = new ArrayList<StatNode>(); RESULT = new StatListNode("StatList", tmp_list); :}//
 	 | Stat:stat StatList:statlist {: ((StatListNode) statlist).add((StatNode)stat); RESULT = statlist; :}//
@@ -95,9 +98,11 @@ Stat ::= IfStat:ifstat SEMI {: RESULT = (StatNode) ifstat; :}
 	| WriteStat:writestat SEMI {: RESULT = (StatNode) writestat; :}
 	| AssignStat:assignstat SEMI {: RESULT = (StatNode) assignstat; :}
 	| CallFun:callfunstat SEMI {: RESULT = (StatNode) callfunstat; :}
-	| RETURN Expr:returnexprstat SEMI {: RESULT = new ReturnStatNode("ReturnOp", (ExprNode) returnexprstat); :}
+	| ReturnStat:returnstat SEMI {: RESULT = (StatNode) returnstat; :}
 ;
-//?
+
+ReturnStat ::= RETURN Expr:expr {: RESULT = new ReturnStatNode("ReturnOp", (ExprNode) expr); :} ;
+
 IfStat ::= IF Expr:expr THEN VarDeclList:varDeclist StatList:statlist Else:elseb END IF {:
 BodyNode bn = new BodyNode("BodyOp",(ArrayList<VarDeclNode>)varDeclist,(StatListNode) statlist);
 if(elseb!=null){
@@ -117,7 +122,7 @@ ReadStat ::= READ IdList:idlist Expr:expr {: RESULT = new ReadStatNode("ReadOp",
 IdList ::= ID:id {: ArrayList<LeafID> l = new ArrayList<LeafID>(); l.add(new LeafID(id)); RESULT= l; :}
 	| IdList:idlist COMMA ID:id {: ((ArrayList)idlist).add(new LeafID(id)); RESULT = idlist;  :}//?
 ;
-WriteStat ::=  WRITE  Expr:expr {: RESULT = new WriteStatNode("WriteOp",new ModeWriteNode("writet"),(ExprNode) expr);:}
+WriteStat ::=  WRITE  Expr:expr {: RESULT = new WriteStatNode("WriteOp",new ModeWriteNode("write"),(ExprNode) expr);:}
 	| WRITELN  Expr:expr {: RESULT = new WriteStatNode("WriteOp",new ModeWriteNode("writeln"),(ExprNode) expr); :}
 	| WRITET  Expr:expr {: RESULT = new WriteStatNode("WriteOp",new ModeWriteNode("writet"),(ExprNode) expr); :}
 	| WRITEB  Expr:expr {: RESULT = new WriteStatNode("WriteOp",new ModeWriteNode("writeb"),(ExprNode) expr); :}
@@ -130,13 +135,12 @@ CallFun ::= ID:id LPAR ExprList:exprlist RPAR {: RESULT = new CallFunNode("CallF
 ;
 
 ExprList ::= Expr:expr {: ArrayList<ExprNode> l = new ArrayList<ExprNode>(); l.add(0,(ExprNode) expr); RESULT = l; :}
-	| Expr:expr COMMA ExprList:exprList {: ((ArrayList<ExprNode>) exprList).add(0,(ExprNode) expr); RESULT = exprList; :}
+	| Expr:expr COMMA ExprList:exprList {:((ArrayList<ExprNode>) exprList).add(0,(ExprNode) expr); RESULT = exprList; :}
 	| OUTPAR ID:id {: ExprNode e = new ExprNode("OutPar",new ModeParNode("out"), new LeafID(id)); ArrayList<ExprNode> l_temp= new ArrayList<ExprNode>(); l_temp.add((ExprNode) e); RESULT = l_temp; :}//?
 	| OUTPAR ID:id COMMA ExprList:exprlist {:  ExprNode e = new ExprNode("OutPar",new ModeParNode("out"),new LeafID(id)); ((ArrayList<ExprNode>)exprlist).add(0,(ExprNode) e); RESULT = exprlist; :}//?
 ;
 
-Expr ::= TRUE:val {: RESULT = new ExprNode("TRUE", new LeafBool(val)); :}
-	| FALSE:val   {: RESULT = new ExprNode("FALSE", new LeafBool(val)); :}
+Expr ::= BOOL_CONST:val {: RESULT = new ExprNode("BOOL_CONST", new LeafBool(val)); :}
 	| INTEGER_CONST:val {: RESULT = new ExprNode("INTEGER_CONST", new LeafIntegerConst(val)); :}
 	| REAL_CONST:val {: RESULT = new ExprNode("REAL_CONST", new LeafRealConst(val)); :}
 	| STRING_CONST:val {: RESULT = new ExprNode("STRING_CONST", new LeafStringConst(val)); :}
@@ -146,7 +150,7 @@ Expr ::= TRUE:val {: RESULT = new ExprNode("TRUE", new LeafBool(val)); :}
 	| Expr:e1  MINUS Expr:e2 {: RESULT = new ExprNode("DiffOp",(ExprNode) e1,(ExprNode) e2); :}
 	| Expr:e1 TIMES Expr:e2 {: RESULT = new ExprNode("MulOp",(ExprNode) e1,(ExprNode) e2); :}
 	| Expr:e1  DIV Expr:e2 {: RESULT = new ExprNode("DivOp",(ExprNode) e1,(ExprNode) e2); :}
-	| Expr:e1  DIVINT Expr:e2 {: RESULT = new ExprNode("DiffOp",(ExprNode) e1,(ExprNode) e2); :}
+	| Expr:e1  DIVINT Expr:e2 {: RESULT = new ExprNode("DivIntOp",(ExprNode) e1,(ExprNode) e2); :}
 	| Expr:e1  AND Expr:e2 {: RESULT = new ExprNode("AndOp",(ExprNode) e1,(ExprNode) e2); :}
 	| Expr:e1 POW Expr:e2 {: RESULT = new ExprNode("PowOp",(ExprNode) e1,(ExprNode) e2); :}
 	| Expr:e1 STR_CONCAT Expr:e2 {: RESULT = new ExprNode("StrCatOp",(ExprNode) e1,(ExprNode) e2); :}
@@ -161,3 +165,4 @@ Expr ::= TRUE:val {: RESULT = new ExprNode("TRUE", new LeafBool(val)); :}
 	| NOT Expr:e1 {: RESULT = new ExprNode("NotOp",(ExprNode) e1); :}
 	| LPAR Expr:e1 RPAR {: RESULT = new ExprNode("ExprOp",(ExprNode) e1); :}
 ;
+

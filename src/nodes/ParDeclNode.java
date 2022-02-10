@@ -1,11 +1,10 @@
 package nodes;
 
-import Visitor.ISyntaxVisitable;
-import Visitor.ISyntaxVisitor;
+import Visitor.*;
 import leafs.LeafID;
 import org.w3c.dom.Element;
 
-public class ParDeclNode implements ISyntaxVisitable {
+public class ParDeclNode implements ISyntaxVisitable,ISemanticVisitable, ICVisitable {
 
     public String name = null;
     public TypeNode typeNode = null;
@@ -24,5 +23,11 @@ public class ParDeclNode implements ISyntaxVisitable {
         return v.visit(this);
     }
 
+
+    @Override
+    public void accept(ISemanticVisitor v) { v.visit(this); }
+
+    @Override
+    public void accept(ICVisitor v) { v.visit(this); }
 
 }

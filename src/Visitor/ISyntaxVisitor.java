@@ -12,7 +12,6 @@ public interface ISyntaxVisitor {
     public Element visit(TypeNode typeNode);
     public Element visit(IdInitNode idInitNode);
     public Element visit(ConstNode constNode);
-    public Element visit(Bool_ConstNode bool_constNode);
     public Element visit(FunNode funNode);
     public Element visit(ParDeclNode parDeclNode);
     public Element visit(StatListNode statListNode);

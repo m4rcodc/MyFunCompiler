@@ -1,11 +1,10 @@
 package nodes;
-import Visitor.ISyntaxVisitable;
-import Visitor.ISyntaxVisitor;
+import Visitor.*;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 
-public class ProgramNode implements ISyntaxVisitable {
+public class ProgramNode implements ISyntaxVisitable, ISemanticVisitable, ICVisitable {
 
     public String name = null;
     public ArrayList<VarDeclNode> nodeArrayList;
@@ -27,4 +26,9 @@ public class ProgramNode implements ISyntaxVisitable {
         return v.visit(this);
     }
 
+    @Override
+    public void accept(ISemanticVisitor v) { v.visit(this);}
+
+    @Override
+    public void accept(ICVisitor v) { v.visit(this); }
 }
