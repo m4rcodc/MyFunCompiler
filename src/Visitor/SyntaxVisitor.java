@@ -63,11 +63,12 @@ public class SyntaxVisitor implements ISyntaxVisitor{
             Element bodyElement = doc.createElement(bodyNode.name);
 
             //ArrayList<VarDecl>
-            Element varDeclElement = doc.createElement("VarDeclList");
-            bodyElement.appendChild(varDeclElement);
-            for(VarDeclNode varDeclNode: bodyNode.vardecl) {
-                varDeclElement.appendChild(varDeclNode.accept(this));
-            }
+                Element varDeclElement = doc.createElement("VarDeclList");
+                bodyElement.appendChild(varDeclElement);
+                for (VarDeclNode varDeclNode : bodyNode.vardecl) {
+                    varDeclElement.appendChild(varDeclNode.accept(this));
+                }
+
             //StatListNode
             if(bodyNode.stats != null) {
                     bodyElement.appendChild(bodyNode.stats.accept(this));
@@ -153,7 +154,9 @@ public class SyntaxVisitor implements ISyntaxVisitor{
 
             //TypeNode
             if(funNode.typeNode != null) {
-                funElement.appendChild(funNode.typeNode.accept(this));
+                Element returnFunType = doc.createElement("ReturnFunType");
+                returnFunType.appendChild(funNode.typeNode.accept(this));
+                funElement.appendChild(returnFunType);
 
             }
 
@@ -340,6 +343,7 @@ public class SyntaxVisitor implements ISyntaxVisitor{
 
         @Override
         public Element visit(ReturnStatNode node){
+
             Element returnStatElement = doc.createElement(node.name);
 
             //ExprNode

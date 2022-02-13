@@ -37,26 +37,38 @@ public class SemanticVisitor implements ISemanticVisitor {
 
         //Gestisco lo scope del body (main)
         programNode.bodyNode.accept(this);
+
+        stack.pop();
     }
 
     //Gestisce lo scope del Body
     public void visit(BodyNode bodyNode){
 
-        //Gestisco lo scope del body
-        SymbolTable symbolTable = new SymbolTable();
-        //symbolTable.symbolTableName = "Body Scope";
-        symbolTable.setFatherSymTab(stack.lastElement());
-        stack.push(symbolTable);
-
+        if(bodyNode.name.equals("FunBody")){
             if(bodyNode.vardecl != null){
-                for(VarDeclNode varDeclNode : bodyNode.vardecl) {
+                for(VarDeclNode varDeclNode : bodyNode.vardecl){
+                    varDeclNode.accept(this);
+                }
+            }
+            bodyNode.stats.accept(this);
+        }
+        else {
+            //Gestisco lo scope del body
+            SymbolTable symbolTable = new SymbolTable();
+            //symbolTable.symbolTableName = "Body Scope";
+            symbolTable.setFatherSymTab(stack.lastElement());
+            stack.push(symbolTable);
+
+            if (bodyNode.vardecl != null) {
+                for (VarDeclNode varDeclNode : bodyNode.vardecl) {
                     varDeclNode.accept(this);
                 }
             }
 
             bodyNode.stats.accept(this);
 
-        stack.pop();
+            stack.pop();
+        }
 
     }
 
@@ -75,13 +87,14 @@ public class SemanticVisitor implements ISemanticVisitor {
                 SymbolTable picked = stack.peek();
                 //Se è già presente uno scope padre
                 //Verifico se c'è una variabile con lo stesso nome di una funzione
-                /*if(picked.getFatherSymTab() != null){
+                if(picked.getFatherSymTab() != null) {
                     SymbolTableEntry symbolTableEntry = picked.getFatherSymTab().get(idInitNode.leaf.value);
                     //Se symbolTableEntry != null cioè se la variabile è gia presente in una table padre e quindi se è associata al nome di una funzione lancio errore
-                    if(symbolTableEntry != null && symbolTableEntry.type == Type.Function) {
+                    if (symbolTableEntry != null && symbolTableEntry.type == Type.Function) {
                         System.err.println("Semantic error: Cannot declare a variable with ID:" + idInitNode.leaf.value + ". There is a function with same ID.");
                         System.exit(0);
-                    } /*else if (symbolTableEntry != null && symbolTableEntry.valueType.equals(ValueType.Var)) {
+                    }
+                }/*else if (symbolTableEntry != null && symbolTableEntry.valueType.equals(ValueType.Var)) {
                         ValueType type = idInitNode.c.type;
                         symbolTableEntry.valueType = type;
                         picked.createEntry_variable(idInitNode.leaf.value,varDeclNode.type.type);
@@ -119,8 +132,6 @@ public class SemanticVisitor implements ISemanticVisitor {
 
                 //varDeclNode.setType(idInitNode.type.toString());
           }
-
-
 
 
     }
@@ -240,6 +251,7 @@ public class SemanticVisitor implements ISemanticVisitor {
         }
 
         //Gestisco il body della funzione
+        funNode.bodyNode.name = "FunBody";
         funNode.bodyNode.accept(this);
 
         //Controllo sul tipo di ritorno della funzione, ovvero se la funzione è void non deve tornare niente, se la funzione torna un int, il return stat node deve essere di tipo int ecc
@@ -398,7 +410,7 @@ public class SemanticVisitor implements ISemanticVisitor {
         node.expr.accept(this);
         //Check id type and expr type
         if(!checkAssignmentType(node.leaf.type, node.expr.types.get(0))){
-            System.err.println("Semantic Error: ID type does not match with Assign Value type in assign stat for id: " + node.leaf.name);
+            System.err.println("Semantic Error: ID type does not match with Assign Value type in assign stat for id: " + node.leaf.value);
             System.exit(0);
         }
     }
@@ -430,10 +442,6 @@ public class SemanticVisitor implements ISemanticVisitor {
 
         node.expr.accept(this);
 
-        if(node.expr.types.get(0) != ValueType.String){
-            System.err.println("Semantic Error: content of write operator is not allowed, required: " + ValueType.String);
-            System.exit(0);
-        }
     }
 
     public void visit(ReturnStatNode node) {
@@ -559,7 +567,7 @@ public class SemanticVisitor implements ISemanticVisitor {
                 ValueType takenType = getType_StrConcat(((ExprNode) exprNode.value1).types.get(0),
                         ((ExprNode) exprNode.value2).types.get(0));
                 if(takenType == null) {
-                    System.err.println("Semantic error: type not compatible with operation (" + exprNode.name + ").");
+                    System.err.println("Semantic error: type not compatible with operation (" + exprNode.name + "). Required first type: " + ValueType.String);
                     System.exit(0);
                 } else {
                     exprNode.setType(takenType);
@@ -767,32 +775,18 @@ public class SemanticVisitor implements ISemanticVisitor {
 
     //Semantic check per string concat &
     public static ValueType getType_StrConcat(ValueType type1, ValueType type2){
-        if(type1 == ValueType.Integer && type2 == ValueType.Integer)
+        if(type1 == ValueType.String && type2 == ValueType.String){
             return ValueType.String;
-        if(type1 == ValueType.Integer && type2 == ValueType.String)
+        }
+        if(type1 == ValueType.String && type2 == ValueType.Integer){
             return ValueType.String;
-        if(type1 == ValueType.Real && type2 == ValueType.Integer)
+        }
+        if(type1 == ValueType.String && type2 == ValueType.Real){
             return ValueType.String;
-        if(type1 == ValueType.Integer && type2 == ValueType.Real)
+        }
+        if(type1 == ValueType.String && type2 == ValueType.Bool){
             return ValueType.String;
-        if(type1 == ValueType.String && type2 == ValueType.Integer)
-            return ValueType.String;
-        if(type1 == ValueType.Real && type2 == ValueType.String)
-            return ValueType.String;
-        if(type1 == ValueType.Real && type2 == ValueType.Real)
-            return ValueType.String;
-        if(type1 == ValueType.String && type2 == ValueType.String)
-            return ValueType.String;
-        if(type1 == ValueType.String && type2 == ValueType.Real)
-            return ValueType.String;
-        if(type1 == ValueType.Bool && type2 == ValueType.String)
-            return ValueType.String;
-        if(type1 == ValueType.Bool && type2 == ValueType.Integer)
-            return ValueType.String;
-        if(type1 == ValueType.Bool && type2 == ValueType.Real)
-            return ValueType.String;
-        if(type1 == ValueType.Bool && type2 == ValueType.Bool)
-            return ValueType.String;
+        }
         else
             return null;
     }

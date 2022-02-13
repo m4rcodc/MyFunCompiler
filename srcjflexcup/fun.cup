@@ -8,10 +8,9 @@ import Visitor.*;
 terminal MAIN,END,SEMI,VAR,INTEGER,BOOL,REAL,STRING,COMMA,ASSIGN,RPAR,LPAR,FUN,COLON,
          ELSE,WHILE,LOOP,READ,WRITELN,WRITET,WRITEB,WRITE,PLUS,MINUS,TIMES,DIV,DIVINT,
          AND,POW,STR_CONCAT,OR,GT,GE,LT,LE,EQ,NE,NOT,IF,THEN,RETURN,OUTPAR,OUT;
-//terminal Boolean TRUE, FALSE;
+
 terminal Integer INTEGER_CONST;
 terminal Boolean BOOL_CONST;
-//terminal Float REAL_CONST;//Problem
 terminal String STRING_CONST, ID, REAL_CONST;
 
 terminal _uminus;
@@ -52,7 +51,7 @@ Type ::= INTEGER {: RESULT = new TypeNode("IntOp", "INTEGER"); :}
          | REAL {: RESULT = new TypeNode("RealOp", "REAL"); :}
          | STRING {: RESULT = new TypeNode("StringOp", "STRING"); :}
 ;
-//?
+
 IdListInit ::= ID:id {: ArrayList<IdInitNode> l = new ArrayList<IdInitNode>(); l.add(new IdInitNode(new LeafID(id))); RESULT = l; :}
 	| IdListInit:idlistinit COMMA ID:id {: ((ArrayList<IdInitNode>)idlistinit).add(new IdInitNode(new LeafID(id))); RESULT = idlistinit; :}
 	| ID:id ASSIGN Expr:expr {: ArrayList<IdInitNode> l = new ArrayList<IdInitNode>(); l.add(new IdInitNode(new LeafID(id), (ExprNode) expr)); RESULT = l; :}

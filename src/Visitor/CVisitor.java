@@ -1,11 +1,8 @@
 package Visitor;
 
-import jdk.internal.org.objectweb.asm.tree.analysis.Value;
-import jdk.nashorn.internal.codegen.CompilerConstants;
 import nodes.*;
 import leafs.*;
 import support.SymbolTable;
-import support.SymbolTableEntry;
 import support.ValueType;
 
 import java.io.*;
@@ -15,10 +12,9 @@ import java.util.ArrayList;
 public class CVisitor implements ICVisitor {
 
     private PrintWriter writer;
-    //private static int argumentsMain = 0;
     private String actualFunName = "";
     private String actualName = "";
-    ArrayList<String> outParName = new ArrayList();
+    ArrayList<String> outParName = null;
     boolean flagInt = false;
 
     public CVisitor(String name) throws IOException {
@@ -44,7 +40,7 @@ public class CVisitor implements ICVisitor {
         writer.println("#include <unistd.h>");
         writer.println("#include <string.h>");
         writer.println("#define MAXCHAR 512\n");
-
+        /*
         writer.println("char* int_to_string(int number) {");
         writer.println("\tchar* buffer = malloc(sizeof(char));");
         writer.println("\tsprintf(buffer, \"%d\", number);");
@@ -73,7 +69,41 @@ public class CVisitor implements ICVisitor {
         writer.println(("\tstrcat(buffer, str2);"));
         writer.println("\treturn buffer;");
         writer.println("}\n");
+        */
 
+        writer.println("\n// Funzioni di concatenazione");
+        writer.print("char *concatInt(char *string, int toConcat) {\n");
+        writer.print("int length = snprintf(NULL, 0,\"%d\", toConcat);\n");//ritorna il numero di caratteri scritti
+        writer.print("char *converted = (char *) malloc(length + 1);\n");
+        writer.print("sprintf(converted, \"%d\", toConcat);\n");
+        writer.print("char *concat = (char *) malloc(1 + strlen(string)+ strlen(converted));\n");
+        writer.print("strcpy(concat, string);\n");
+        writer.print("strcat(concat, converted);\n");
+        writer.print("return concat;\n}\n");
+
+        writer.print("char *concatReal(char *string, float toConcat) {\n");
+        writer.print("int length = snprintf(NULL, 0,\"%f\", toConcat);\n");
+        writer.print("char *converted = (char *) malloc(length + 1);\n");
+        writer.print("sprintf(converted, \"%f\", toConcat);\n");
+        writer.print("char *concat = (char *) malloc(1 + strlen(string)+ strlen(converted));\n");
+        writer.print("strcpy(concat, string);\n");
+        writer.print("strcat(concat, converted);\n");
+        writer.print("return concat;\n}\n");
+
+        writer.print("char *concatBool(char *string, int toConcat) {\n");
+        writer.print("char *converted = (char *) malloc(6);\n");
+        writer.print("if(toConcat == 1) strcpy(converted, \"true\");\n");
+        writer.print("else strcpy(converted, \"false\");\n");
+        writer.print("char *concat = (char *) malloc(1 + strlen(string)+ strlen(converted));\n");
+        writer.print("strcpy(concat, string);\n");
+        writer.print("strcat(concat, converted);\n");
+        writer.print("return concat;\n}\n");
+
+        writer.print("char *concatString(char *string, char *toConcat) {\n");
+        writer.print("char *concat = (char *) malloc(1 + strlen(string)+ strlen(toConcat));\n");
+        writer.print("strcpy(concat, string);\n");
+        writer.print("strcat(concat, toConcat);\n");
+        writer.print("return concat;\n}\n");
 
         //ArrayList<VarDeclNode>
         if(node.nodeArrayList != null) {
@@ -93,6 +123,7 @@ public class CVisitor implements ICVisitor {
         //BodyNode
         writer.println("int main () {\n");
         node.bodyNode.accept(this);
+        writer.println("return 0;");
         writer.println("}");
         writer.close();
 
@@ -161,31 +192,56 @@ public class CVisitor implements ICVisitor {
 
         //LeafID
         node.leaf.accept(this);
-        /*
+
         if(node.type == ValueType.String) {
-            writer.print("*");
+            writer.print(" = malloc(sizeof(char) * MAXCHAR)");
         }
-        */
+
 
         //ExprNode
         if(node.expr != null){
-            writer.print(" = ");
-            node.expr.accept(this);
+            if(node.type == ValueType.String){
+                writer.print(";\n");
+                writer.print("strcpy(");
+                node.leaf.accept(this);
+                writer.print(", ");
+                node.expr.accept(this);
+                writer.print(")");
+            }
+            else {
+                writer.print(" = ");
+                node.expr.accept(this);
+            }
             if(node.expr.value1 instanceof CallFunNode){
                 flag = true;
             }
         }
 
+
         //ConstNode
         if(node.c != null){
-            writer.print(" = ");
-            node.c.accept(this);
+            if(node.type == ValueType.String){
+                writer.print(";\n");
+                writer.print("strcpy(");
+                node.leaf.accept(this);
+                writer.print(", ");
+                node.c.accept(this);
+                writer.print(")");
+            }
+            else {
+                writer.print(" = ");
+                node.c.accept(this);
+            }
+           if(node.c.value1 instanceof CallFunNode){
+                flag = true;
+            }
         }
 
         if(flag){
         }
         else {
-            writer.println(";");
+        //writer.println("");
+            writer.print(";\n");
         }
     }
 
@@ -193,15 +249,12 @@ public class CVisitor implements ICVisitor {
 
         if(constNode.value1 instanceof LeafIntegerConst){
             ((LeafIntegerConst) constNode.value1).accept(this);
-            //constNode.setType(((LeafStringConst) constNode.value1).type);
         }
         else if(constNode.value1 instanceof LeafStringConst){
             ((LeafStringConst) constNode.value1).accept(this);
-            //constNode.setType(((LeafStringConst) constNode.value1).type);
         }
         else if(constNode.value1 instanceof LeafRealConst){
             ((LeafRealConst) constNode.value1).accept(this);
-            //constNode.setType(((LeafRealConst) constNode.value1).type);
         }
         else {
             ((LeafBool) constNode.value1).accept(this);
@@ -211,8 +264,44 @@ public class CVisitor implements ICVisitor {
 
     public void visit(FunNode node){
         writer.println("\n//Fun " + node.leaf.value);
-        this.actualFunName = node.leaf.value;
+        //this.actualFunName = node.leaf.value;
 
+        this.outParName = new ArrayList<>();
+
+        if(node.getTypeNode() != null){
+                node.typeNode.accept(this);
+
+                /*if(node.typeNode.type.equals("STRING")){
+                    writer.print("*");
+                }*/
+
+        }
+        else {
+            writer.print("void ");
+        }
+
+        node.leaf.accept(this);
+
+        writer.print("(");
+
+        if(node.pardecl.size() != 0){
+            for(int i = 0; i < node.pardecl.size(); i++){
+                ParDeclNode parDeclNode = node.pardecl.get(i);
+                parDeclNode.accept(this);
+                if( i != node.pardecl.size() - 1){
+                    writer.print(", ");
+                }
+            }
+        }
+        writer.print(") {\n");
+
+        node.bodyNode.accept(this);
+
+        this.outParName = new ArrayList<String>();
+
+        writer.println("}\n\n");
+
+        /*
         //node.typeNode.accept(this);
         //Controllo sul tipo di ritorno della funzione
         if(node.getTypeNode() == null){
@@ -273,6 +362,8 @@ public class CVisitor implements ICVisitor {
         node.bodyNode.accept(this);
         outParName.clear();
         writer.println("}\n\n");
+        */
+
     }
 
     public void visit(ParDeclNode node) {
@@ -282,11 +373,15 @@ public class CVisitor implements ICVisitor {
         /*if(node.typeNode.type.equalsIgnoreCase("String")){
             writer.print("* ");
         }*/
-        node.mod.accept(this);
+        //node.mod.accept(this);
         if(node.mod.mod.equals("out")){
-            writer.print("*");
+            this.outParName.add(node.leaf.value);
+            //writer.print("*");
         }
 
+        /*if(node.typeNode.type.equals("STRING")){
+            writer.print("*");
+        }*/
         //Mi prendo il nome del parametro
         node.leaf.accept(this);
 
@@ -365,6 +460,12 @@ public class CVisitor implements ICVisitor {
 
     public void visit(ReadStatNode node) {
 
+        if(node.expr != null){
+            writer.print("printf(\"%s\", ");
+            node.expr.accept(this);
+            writer.println(");");
+        }
+
         for(LeafID leafID : node.idlist) {
             if(leafID.getType().equals(ValueType.String)){
                 writer.print("scanf(\"%s\", ");
@@ -382,30 +483,33 @@ public class CVisitor implements ICVisitor {
                 writer.println(");");
             }
         }
-        //Gestisco l'exprNode
-        //node.expr.accept(this);
     }
 
     public void visit(WriteStatNode node) {
-        writer.print("printf(");
-        if(!(node.expr.value1 instanceof ConstNode))
-            writer.print("\"%s\", ");
-        if(node.expr.value1 instanceof LeafID){
-            writer.print("*");
+        if(node.expr.types.get(0).equals(ValueType.Integer) || node.expr.types.get(0).equals(ValueType.Bool)){
+            writer.print("printf(\"%d\\n\", ");
+        }
+        if(node.expr.types.get(0).equals(ValueType.String)){
+            writer.print("printf(\"%s\\n\", ");
+        }
+        if(node.expr.types.get(0).equals(ValueType.Real)){
+            writer.print("printf(\"%f\\n\", ");
         }
         node.expr.accept(this);
-        writer.println(");");
-
+        writer.print(");\n");
+        //Case ?.
         if(node.node.name.equals("writeln")){
             writer.println("printf(\"\\n\");");
         }
+        //Case ?,
         else if(node.node.name.equals("writeb")){
             writer.println("printf(\" \");");
         }
+        //Case ?:
         else if(node.node.name.equals("writet")){
             writer.println("printf(\"\\t\");");
         }
-
+        //Case ? (Non faccio nulla perchè è una stampa normale
 
     }
 
@@ -418,7 +522,7 @@ public class CVisitor implements ICVisitor {
 
 
     public void visit(AssignStatNode node) {
-
+        /*
         int i = 0;
         for(i = 0; i < outParName.size();){
             if(outParName.get(i).equals(node.leaf.value)){
@@ -426,35 +530,35 @@ public class CVisitor implements ICVisitor {
             }
             i++;
         }
-
-        if(node.leaf.type.equals(ValueType.String)){
+        */
+        //if(node.leaf.type.equals(ValueType.String)){
             node.leaf.accept(this);
-            writer.print(" = malloc(sizeof(char) * strlen(");
+            writer.print(" = ");
             node.expr.accept(this);
-            writer.print("));\n");
-            writer.print("strcpy(");
-            for(i = 0; i < outParName.size();){
+            //writer.print("));\n");
+            //writer.print("strcpy(");
+            /*for(i = 0; i < outParName.size();){
                 if(outParName.get(i).equals(node.leaf.value)){
                     writer.print("*");
                 }
                 i++;
             }
-            node.leaf.accept(this);
-            writer.print(", ");
-            node.expr.accept(this);
-            writer.println(");");
-        }
-        else {
-            node.leaf.accept(this);
-            writer.print(" = ");
-            node.expr.accept(this);
+            */
+            //node.leaf.accept(this);
+            //writer.print(", ");
+            //node.expr.accept(this);
+            //writer.println(");");
+        //}
+       // else {
+         //   node.leaf.accept(this);
+           // writer.print(" = ");
+           // node.expr.accept(this);
             if(node.expr.value1 instanceof CallFunNode){
             }
             else {
-                writer.println(";");
+                writer.println(";\n");
             }
         }
-    }
 
     public void visit(CallFunNode node) {
 
@@ -601,7 +705,35 @@ public class CVisitor implements ICVisitor {
                 }
                 break;
                 case "StrCatOp":
-                                    writer.print("(");
+                                    if(((ExprNode) exprNode.value2).types.get(0) == ValueType.Integer){
+                                        writer.print("concatInt( ");
+                                        ((ExprNode) exprNode.value1).accept(this);
+                                        writer.print(", ");
+                                        ((ExprNode) exprNode.value2).accept(this);
+                                        writer.print(")");
+                                    }
+                                    if(((ExprNode) exprNode.value2).types.get(0) == ValueType.Real){
+                                        writer.print("concatReal( ");
+                                        ((ExprNode) exprNode.value1).accept(this);
+                                        writer.print(", ");
+                                        ((ExprNode) exprNode.value2).accept(this);
+                                        writer.print(")");
+                                    }
+                                    if(((ExprNode) exprNode.value2).types.get(0) == ValueType.Bool){
+                                        writer.print("concatBool( ");
+                                        ((ExprNode) exprNode.value1).accept(this);
+                                        writer.print(", ");
+                                        ((ExprNode) exprNode.value2).accept(this);
+                                        writer.print(")");
+                                    }
+                                    if(((ExprNode) exprNode.value2).types.get(0) == ValueType.String){
+                                        writer.print("concatString( ");
+                                        ((ExprNode) exprNode.value1).accept(this);
+                                        writer.print(", ");
+                                        ((ExprNode) exprNode.value2).accept(this);
+                                        writer.print(")");
+                                    }
+                                    /*
                                     writer.print("concat_string(");
                                     //((ExprNode) exprNode.value1).accept(this);
                                     strConcatSupport((ExprNode) exprNode.value1);
@@ -609,8 +741,18 @@ public class CVisitor implements ICVisitor {
                                     //((ExprNode) exprNode.value2).accept(this);
                                     strConcatSupport((ExprNode) exprNode.value2);
                                     writer.print(")");
-                                    writer.print(")");
-                break;
+                                    /*if(((ExprNode) exprNode.value1).value2 !=  null) {
+                                        if ((((ExprNode) exprNode.value1).value2) instanceof LeafStringConst) {
+                                        } else {
+                                            writer.print(")");
+                                        }
+                                    }
+                                    if(exprNode.value2 instanceof CallFunNode){
+                                        writer.print(")");
+                                    }
+                                    */
+
+                        break;
                     }
             }
         else if(exprNode.value1 != null) {
@@ -647,6 +789,11 @@ public class CVisitor implements ICVisitor {
     }
 
     public void visit(LeafID leaf){
+        if(this.outParName != null){
+            if(this.outParName.contains(leaf.value)){
+                writer.print("*");
+            }
+        }
         writer.print(leaf.value);
     }
 
@@ -655,10 +802,20 @@ public class CVisitor implements ICVisitor {
     }
 
     public void visit(LeafStringConst leaf) {
-        writer.print("\"" + leaf.value + "\"");
+
+        if(leaf.value.length() != 0){
+            writer.print("\"" + leaf.value + "\"");
+        }
+        else {
+            writer.print("\"\"");
+        }
+
     }
 
     private void strConcatSupport(ExprNode exprNode){
+            //ValueType type = ValueType.Integer;
+            //ValueType typeReturn = ValueType.Integer;
+            boolean flag = false;
             if(exprNode.value1 instanceof LeafIntegerConst){
                 writer.print("int_to_string(");
             }
@@ -666,584 +823,47 @@ public class CVisitor implements ICVisitor {
                 writer.print("double_to_string(");
             }
             else if(exprNode.value1 instanceof LeafBool){
-                writer.print("bool_to_string");
+                writer.print("bool_to_string(");
+            }
+            else if(exprNode.value1 instanceof LeafStringConst){
+                  flag = true;
             }
             else if(exprNode.value1 instanceof LeafID){
-               ValueType type = ((LeafID) exprNode.value1).getType();
+                ValueType type = ((LeafID) exprNode.value1).getType();
                if(type.equals(ValueType.Integer)){
                    writer.print("int_to_string(");
                }
-               if(type.equals(ValueType.Real)){
+               else if(type.equals(ValueType.Real)){
                    writer.print("double_to_string(");
                }
-               if(type.equals(ValueType.Bool)){
+               else if(type.equals(ValueType.Bool)){
                    writer.print("bool_to_string(");
+               }
+               else if(type.equals(ValueType.String)){
+                        flag = true;
                }
             }
             else if(exprNode.value1 instanceof CallFunNode){
-                ValueType type = ((CallFunNode) exprNode.value1).types.get(0);
-                if(type.equals(ValueType.Integer)){
+                ValueType typeReturn = ((CallFunNode) exprNode.value1).types.get(0);
+                if(typeReturn.equals(ValueType.Integer)){
                     writer.print("int_to_string(");
                 }
-                if(type.equals(ValueType.Real)){
+                else if(typeReturn.equals(ValueType.Real)){
                     writer.print("double_to_string(");
                 }
-                if(type.equals(ValueType.Bool)){
+                else if(typeReturn.equals(ValueType.Bool)){
                     writer.print("bool_to_string(");
+                }
+                else if(typeReturn.equals(ValueType.String)){
+                    flag = true;
                 }
             }
              exprNode.accept(this);
-             writer.print(")");
+             if(flag) {
+             }
+             else{
+                 writer.print(")");
+             }
+        }
 
-    }
-
-            /*if(exprNode.value1 instanceof LeafIntegerConst){
-                writer.print("int_to_string(");
-
-            }
-
-            /*
-            if( exprNode.value2 instanceof LeafIntegerConst){
-                writer.print("int_to_string(");
-                ((LeafIntegerConst) exprNode.value2).accept(this);
-                writer.print(")");
-            }
-            /*
-            if((((ExprNode) exprNode.value1).types.get(0).equals(ValueType.Integer)) && ((ExprNode) exprNode.value2).value1 instanceof LeafID){
-                if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Integer)){
-                    ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                    writer.print(",");
-                    writer.print("int_to_string(");
-                    ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                    writer.print(")");
-                }
-            else if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Bool)) {
-                ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(",");
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Real)) {
-                ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(",");
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.String)) {
-                ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(",");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-        }
-        //Concat di Real con tutti gli altri tipi non costanti
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafRealConst && ((ExprNode) exprNode.value2).value1 instanceof LeafID){
-            if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Integer)) {
-                writer.print("double_to_string(");
-                ((LeafRealConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.String)) {
-                writer.print("double_to_string(");
-                ((LeafRealConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Bool)) {
-                writer.print("double_to_string(");
-                ((LeafRealConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Real)){
-                writer.print("double_to_string(");
-                ((LeafRealConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-        }
-        //Concat di Integer con tutti gli altri tipi non costanti
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafIntegerConst && ((ExprNode) exprNode.value2).value1 instanceof LeafID){
-            if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Integer)) {
-                writer.print("int_to_string(");
-                ((LeafIntegerConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.String)) {
-                writer.print("int_to_string(");
-                ((LeafIntegerConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Bool)) {
-                writer.print("int_to_string(");
-                ((LeafIntegerConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Real)){
-                writer.print("int_to_string(");
-                ((LeafIntegerConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-        }
-        //Concat di Bool con tutti gli altri tipi non costanti
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafBool && ((ExprNode) exprNode.value2).value1 instanceof LeafID){
-            if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Integer)) {
-                writer.print("bool_to_string(");
-                ((LeafRealConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.String)) {
-                writer.print("bool_to_string(");
-                ((LeafRealConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Bool)) {
-                writer.print("bool_to_string(");
-                ((LeafRealConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Real)){
-                writer.print("bool_to_string(");
-                ((LeafRealConst) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-        }
-        //Concat di tutti i tipi di variabili con string const
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafID && ((ExprNode) exprNode.value2).value1 instanceof LeafStringConst){
-            if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.String)){
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(",");
-                ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Integer)){
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Real)){
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Bool)){
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-            }
-        }
-        //Concat di tutti i tipi di variabili con integer const
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafID && ((ExprNode) exprNode.value2).value1 instanceof LeafIntegerConst){
-            if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.String)){
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(",");
-                writer.print("int_to_string(");
-                ((LeafIntegerConst) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Integer)){
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Real)){
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Bool)){
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-        }
-        //Concat di tutti i tipi di variabili con real const
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafID && ((ExprNode) exprNode.value2).value1 instanceof LeafRealConst){
-            if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.String)){
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(",");
-                writer.print("double_to_string(");
-                ((LeafRealConst) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Integer)){
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Real)){
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Bool)){
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-        }
-        //Concat di tutti i tipi di variabili con bool const
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafID && ((ExprNode) exprNode.value2).value1 instanceof LeafBool){
-            if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.String)){
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(",");
-                writer.print("bool_to_string(");
-                ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Integer)){
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Real)){
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Bool)){
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-        }
-        ////Concat di tutti i tipi di variabili con tutti i tipi di variabili
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafID && ((ExprNode) exprNode.value2).value1 instanceof LeafID){
-            if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.String) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.String)){
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(",");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.String) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Integer)){
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(",");
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.String) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Real)){
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(",");
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.String) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Bool)){
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(",");
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Integer) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.String)){
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Integer) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Integer)){
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Integer) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Bool)){
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Integer) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Real)){
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Real) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.String)){
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Real) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Integer)){
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Real) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Bool)){
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Real) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Real)){
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Bool) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.String)){
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Bool) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Integer)){
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("int_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Bool) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Bool)){
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-            else if(((LeafID) ((ExprNode) exprNode.value1).value1).getType().equals(ValueType.Bool) && ((LeafID) ((ExprNode) exprNode.value2).value1).getType().equals(ValueType.Real)){
-                writer.print("bool_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value1).value1).accept(this);
-                writer.print(")");
-                writer.print(",");
-                writer.print("double_to_string(");
-                ((LeafID) ((ExprNode) exprNode.value2).value1).accept(this);
-                writer.print(")");
-            }
-        }
-        //Concat tutti i tipi di const con tutti i tipi di const
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafStringConst && ((ExprNode) exprNode.value2).value1 instanceof LeafStringConst){
-            ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-        }
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafStringConst && ((ExprNode) exprNode.value2).value1 instanceof LeafIntegerConst){
-            ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            writer.print("int_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-            writer.print(")");
-        }
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafStringConst && ((ExprNode) exprNode.value2).value1 instanceof LeafRealConst){
-            ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            writer.print("double_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-            writer.print(")");
-        }
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafStringConst && ((ExprNode) exprNode.value2).value1 instanceof LeafBool){
-            ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            writer.print("bool_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-            writer.print(")");
-        }
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafIntegerConst && ((ExprNode) exprNode.value2).value1 instanceof LeafStringConst){
-            writer.print("int_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-        }
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafIntegerConst && ((ExprNode) exprNode.value2).value1 instanceof LeafIntegerConst){
-            writer.print("int_to_string(");
-            ((LeafIntegerConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            writer.print("int_to_string(");
-            ((LeafIntegerConst) ((ExprNode) exprNode.value2).value1).accept(this);
-            writer.print(")");
-        }
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafIntegerConst && ((ExprNode) exprNode.value2).value1 instanceof LeafRealConst){
-            writer.print("int_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            writer.print("double_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-            writer.print(")");
-        }
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafIntegerConst && ((ExprNode) exprNode.value2).value1 instanceof LeafBool){
-            writer.print("int_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            writer.print("bool_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-            writer.print(")");
-        }
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafRealConst && ((ExprNode) exprNode.value2).value1 instanceof LeafIntegerConst){
-            writer.print("double_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            writer.print("int_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-            writer.print(")");
-        }
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafRealConst && ((ExprNode) exprNode.value2).value1 instanceof LeafStringConst){
-            writer.print("double_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-        }
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafRealConst && ((ExprNode) exprNode.value2).value1 instanceof LeafRealConst){
-            writer.print("double_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            writer.print("double_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-            writer.print(")");
-        }
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafRealConst && ((ExprNode) exprNode.value2).value1 instanceof LeafBool){
-            writer.print("double_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            writer.print("bool_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-            writer.print(")");
-        }
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafBool && ((ExprNode) exprNode.value2).value1 instanceof LeafIntegerConst){
-            writer.print("bool_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            writer.print("int_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-            writer.print(")");
-        }
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafBool && ((ExprNode) exprNode.value2).value1 instanceof LeafRealConst){
-            writer.print("bool_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            writer.print("double_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-            writer.print(")");
-        }
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafBool && ((ExprNode) exprNode.value2).value1 instanceof LeafStringConst){
-            writer.print("bool_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-        }
-        else if(((ExprNode) exprNode.value1).value1 instanceof LeafBool && ((ExprNode) exprNode.value2).value1 instanceof LeafBool){
-            writer.print("bool_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value1).value1).accept(this);
-            writer.print(",");
-            writer.print("bool_to_string(");
-            ((LeafStringConst) ((ExprNode) exprNode.value2).value1).accept(this);
-            writer.print(")");
-        }
-        */
 }

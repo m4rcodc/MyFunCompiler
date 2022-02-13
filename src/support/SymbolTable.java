@@ -9,16 +9,18 @@ import java.util.HashMap;
 //La symbol table è implementata con un HashMap dove il parametro String rappresenta il nome della tabella (Ad esempio "Global") e symboltableentry è l'entry della tabella
 public class SymbolTable extends HashMap<String,SymbolTableEntry> {
 
+        //Nome della Symbol Table
         public String symbolTableName;
+        //Padre della Symbol Table
         public SymbolTable pointerToFather;
+
+        //------Metodi Getter e Setter-----
 
         //setta la symbol table padre
         public void setFatherSymTab(SymbolTable symbolTable){
 
             this.pointerToFather = symbolTable;
         }
-
-
         //verifica se esiste la symbol table padre
         public boolean hasFatherSymTab() {
             return pointerToFather != null;
@@ -28,21 +30,21 @@ public class SymbolTable extends HashMap<String,SymbolTableEntry> {
             return pointerToFather;
         }
 
-        //Controllo se la variabile è presente nello scope(nella symbol table), altrimenti la inserisco, type indica il tipo della variabile
+        // Aggiunge una variabile all'interno della tabella corrente
         public void createEntry_variable(String id, String type) throws Exception {
-            if(super.containsKey(id)) throw new Exception("Semantic error in \" + symbolTableName + \": identifier '\" + id + \"' already declared in the actual scope");
+            if(super.containsKey(id)) throw new Exception("Semantic error in " + symbolTableName + ": identifier " + id + " already declared in the actual scope");
             else super.put(id,new SymbolTableEntry(id,StringToType(type)));
         }
 
+        //------Funzioni di accesso/scrittura alla symbol table
 
-
-        //Controlla se la funzione è gia presente nello scope(nella symbol table), altrimenti la inscerisce
+        // Aggiunge una funzione all'interno della tabella corrente
         public void createEntry_function(String id, ArrayList<ModeParNode> modeParams, ArrayList<ValueType> inputParams, ValueType returnParams) throws Exception {
             if (super.containsKey(id)) throw new Exception("Semantic error in " + symbolTableName + ": identifier " + id + " already declared in the actual scope");
             else super.put(id, new SymbolTableEntry(id, modeParams, inputParams, returnParams));
         }
 
-        //Fa la stessa cosa di containsKey ma crea e ritorna l'entrata nella tabella specifica per l' id passato come parametro al metodo
+        // Ritorna la variabile con ID se contenuta altrimenti NULL
         public SymbolTableEntry containsEntry(String id) throws Exception {
             SymbolTableEntry symbolTableEntry = null;
             if(super.containsKey(id)) {
@@ -55,7 +57,7 @@ public class SymbolTable extends HashMap<String,SymbolTableEntry> {
             return symbolTableEntry;
         }
 
-        //Ritorna true se trova l'id specificato come parametro nella tabella corrente o in quella del padre
+        // Verifica se l'ID è contenuto ricorsivamente fino a tabella Global
         public Boolean containsKey(String id) throws Exception {
             if(super.containsKey(id)){
                 return true;
@@ -66,7 +68,7 @@ public class SymbolTable extends HashMap<String,SymbolTableEntry> {
             }
         }
 
-        //Ritorna l'entry associata alla funzione cercata nella tabella
+        // Ritorna la funzione con ID se contenuta altrimenti NULL
         public SymbolTableEntry containsFunctionEntry(String id) throws Exception {
             SymbolTableEntry symbolTableEntry = null;
             if(super.containsKey(id) && !super.get(id).isVariable()) {

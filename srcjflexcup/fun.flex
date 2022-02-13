@@ -7,7 +7,7 @@
 // Ian Stark
 import java_cup.runtime.*; //This is how we pass tokens to the parser
 %%
-%class Lexer									// Declarations for JFlex
+%class Lexer							// Declarations for JFlex
 %unicode 								// We wish to read text files
 %cupsym sym
 %cup 									// Declare that we expect to use Java CUP
