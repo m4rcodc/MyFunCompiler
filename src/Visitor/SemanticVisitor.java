@@ -18,8 +18,8 @@ public class SemanticVisitor implements ISemanticVisitor {
 
     public void visit(ProgramNode programNode) {
         //Genero la tabella di scope globale
-        SymbolTable symbolTable = new SymbolTable();
-        symbolTable.symbolTableName = "Global Scope";
+        SymbolTable symbolTable = new SymbolTable("Global scope");
+        //symbolTable.symbolTableName = "Global Scope";
 
         stack.push(symbolTable);
 
@@ -36,6 +36,7 @@ public class SemanticVisitor implements ISemanticVisitor {
         }
 
         //Gestisco lo scope del body (main)
+        programNode.bodyNode.name = "Main";
         programNode.bodyNode.accept(this);
 
         stack.pop();
@@ -54,9 +55,9 @@ public class SemanticVisitor implements ISemanticVisitor {
         }
         else {
             //Gestisco lo scope del body
-            SymbolTable symbolTable = new SymbolTable();
-            //symbolTable.symbolTableName = "Body Scope";
-            symbolTable.setFatherSymTab(stack.lastElement());
+            SymbolTable symbolTable = new SymbolTable(bodyNode.name);
+            //symbolTable.symbolTableName = bodyNode.name;
+            symbolTable.setFatherSymTab(stack.peek());
             stack.push(symbolTable);
 
             if (bodyNode.vardecl != null) {
@@ -82,7 +83,6 @@ public class SemanticVisitor implements ISemanticVisitor {
 
         //Gestisco l'inizializzazione della variabile
         for(IdInitNode idInitNode : varDeclNode.identifiers){
-            try{
                 //Prendo la tabella dei simboli sul top dello stack in quel momento
                 SymbolTable picked = stack.peek();
                 //Se è già presente uno scope padre
@@ -92,7 +92,7 @@ public class SemanticVisitor implements ISemanticVisitor {
                     //Se symbolTableEntry != null cioè se la variabile è gia presente in una table padre e quindi se è associata al nome di una funzione lancio errore
                     if (symbolTableEntry != null && symbolTableEntry.type == Type.Function) {
                         System.err.println("Semantic error: Cannot declare a variable with ID:" + idInitNode.leaf.value + ". There is a function with same ID.");
-                        System.exit(0);
+                        System.exit(1);
                     }
                 }/*else if (symbolTableEntry != null && symbolTableEntry.valueType.equals(ValueType.Var)) {
                         ValueType type = idInitNode.c.type;
@@ -101,12 +101,19 @@ public class SemanticVisitor implements ISemanticVisitor {
                     }*/
                     //Altrimenti se la variabile non è presente nello scope attuale la inserisco nello scope corrente
                     //Caso in cui la variabile non è inizializzata
-                    picked.createEntry_variable(idInitNode.leaf.value,varDeclNode.type.type);
+                    if(!picked.createEntry_variable(idInitNode.leaf.value,varDeclNode.type.type)){
+                        System.err.println("Semantic error in " + stack.peek().symbolTableName + ": identifier " + idInitNode.leaf.value +" already declared in the actual scope");
+                        System.exit(1);
+                    }
 
                     //Gestisco l'inferenza per il tipo VAR
                     if(varDeclNode.type.type.equalsIgnoreCase("Var")){
                         idInitNode.accept(this);
                         SymbolTableEntry symbolTableEntry = picked.containsEntry(idInitNode.leaf.value);
+                        if(symbolTableEntry == null){
+                            System.err.println("Semantic error: variable " + idInitNode.leaf.value + " is not declared");
+                            System.exit(1);
+                        }
                         symbolTableEntry.setValueType(idInitNode.type);
 
                     }
@@ -116,10 +123,6 @@ public class SemanticVisitor implements ISemanticVisitor {
                         idInitNode.setType(varDeclNode.type.type);
                     }
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.exit(0);
-                }
 
                     //varDeclNode.setType(idInitNode.type.toString());
 
@@ -149,33 +152,33 @@ public class SemanticVisitor implements ISemanticVisitor {
         if(idInitNode.expr != null) {
             idInitNode.expr.accept(this);
             if(idInitNode.expr.value1 instanceof CallFunNode){
-               ValueType returnType = ((CallFunNode) idInitNode.expr.value1).types.get(0);
+               ValueType returnType = ((CallFunNode) idInitNode.expr.value1).type;
                if(returnType.equals(ValueType.Void) && idInitNode.leaf.type != null){
                    System.err.println("Semantic error: type mismatch , wrong initialization for variable " + idInitNode.leaf.value + ", the second argument of assignment is a callfun that return void");
-                   System.exit(0);
+                   System.exit(1);
                 }
                if(!returnType.equals(ValueType.Void) && idInitNode.leaf.type != null){
                    if (!checkAssignmentType(idInitNode.leaf.type, returnType)) {
                        System.err.println("Semantic error: type mismatch , wrong initialization for variable " + idInitNode.leaf.value + " ,required: " + idInitNode.leaf.type + " ,provided: " + returnType);
-                       System.exit(0);
+                       System.exit(1);
                    }
                }
 
             }
-            if (!checkAssignmentType(idInitNode.leaf.type, idInitNode.expr.types.get(0))) {
+            if (!checkAssignmentType(idInitNode.leaf.type, idInitNode.expr.type)) {
                 System.err.println("Semantic error: type mismatch , wrong initialization for variable " + idInitNode.leaf.value);
-                System.exit(0);
+                System.exit(1);
             }
         }
 
-        //ConstNode
+        //ConstNode (VAR)
         if(idInitNode.c != null) {
             idInitNode.c.accept(this);
             idInitNode.setType(idInitNode.c.type);
         }
     }
 
-
+    //ConstNode (VAR)
     public void visit(ConstNode constNode){
 
         if(constNode.value1 instanceof LeafIntegerConst){
@@ -200,10 +203,8 @@ public class SemanticVisitor implements ISemanticVisitor {
     public void visit(FunNode funNode){
         // Controllo se la funzione dichiarata esiste già nel type environment, ovvero controllo la sua firma, parametri di input e valore di ritorno della funzione
         ValueType outType = null;
-        try {
             ArrayList<ValueType> paramsType = new ArrayList<>();
             ArrayList<ModeParNode> modeParams = new ArrayList<>();
-
 
             //Mi salvo i tipi dei parametri della funzione nell'array paramsType, e la modalità dei parametri nell'array modeParam
             if (funNode.pardecl != null) {
@@ -228,17 +229,15 @@ public class SemanticVisitor implements ISemanticVisitor {
 
 
             //Controllo se la funzione è presente nello scope, altrimenti la inserisco direttamente col metodo createEntry_function
-            stack.firstElement().createEntry_function(funNode.leaf.value, modeParams, paramsType, outType);
+            if(!stack.firstElement().createEntry_function(funNode.leaf.value, modeParams, paramsType, outType)){
+                System.err.println("Semantic error in " + stack.peek().symbolTableName + ": identifier " + funNode.leaf.value + " already declared in the actual scope");
+                System.exit(1);
+            }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(0);
-
-        }
 
         //Se la funzione non c'è già nel type environment posso continuare, ovvero creo una nuova tabella,cioè un nuovo scope dove gestisco i parametri e il body della funzione
-        SymbolTable symbolTable = new SymbolTable();
-        symbolTable.symbolTableName = "Function " + funNode.leaf.value + " scope";
+        SymbolTable symbolTable = new SymbolTable(funNode.name);
+        //symbolTable.symbolTableName = "Function " + funNode.leaf.value + " scope";
         symbolTable.setFatherSymTab(stack.firstElement());
         stack.push(symbolTable);
 
@@ -259,7 +258,7 @@ public class SemanticVisitor implements ISemanticVisitor {
         for(StatNode statNode : funNode.bodyNode.stats.statList){
 
             if(statNode instanceof ReturnStatNode){
-                returnType =  ((ReturnStatNode) statNode).expr.types.get(0);
+                returnType =  ((ReturnStatNode) statNode).expr.type;
             }
         }
 
@@ -267,14 +266,14 @@ public class SemanticVisitor implements ISemanticVisitor {
         if(outType.equals(ValueType.Void)){
             if(returnType != null){
                 System.err.println("Semantic error: function " + funNode.leaf.value + " must be void.");
-                System.exit(0);
+                System.exit(1);
             }
         }
         //Controllo sulla corrispondenza tra l'outType della function ed il tipo che ritorna
         else {
             if(!checkAssignmentType(outType,returnType)) {
                 System.err.println("Semantic error: return type of function " + funNode.leaf.value + " is not valid. Required: " + outType);
-                System.exit(0);
+                System.exit(1);
             }
         }
 
@@ -297,19 +296,17 @@ public class SemanticVisitor implements ISemanticVisitor {
         //Lessema del parametro (nome)
         //node.leaf.accept(this);
 
-        try {
             SymbolTable picked = stack.peek();
             SymbolTableEntry symbolTableEntry = picked.getFatherSymTab().get(node.leaf.value);
             if(symbolTableEntry != null && symbolTableEntry.type == Type.Function){
                 System.err.println("Semantic error: Cannot declare a variable with ID:" + node.leaf.value + ". There is a function with same ID.");
-                System.exit(0);
+                System.exit(1);
             } else {
-                picked.createEntry_variable(node.leaf.value,node.typeNode.type);
+                if(!picked.createEntry_variable(node.leaf.value,node.typeNode.type)){
+                    System.err.println("Semantic error in " + stack.peek().symbolTableName + ": identifier " + node.leaf.value + " already declared in the actual scope");
+                    System.exit(1);
+                }
             }
-        } catch(Exception e) {
-            e.printStackTrace();
-            System.exit(0);
-        }
 
         node.leaf.accept(this);
     }
@@ -363,16 +360,18 @@ public class SemanticVisitor implements ISemanticVisitor {
         node.expr.accept(this);
 
         //Controllo sul tipo della condizione
-        if(node.expr.types.get(0) != ValueType.Bool){
+        if(node.expr.type != ValueType.Bool){
             System.err.println("Semantic error: condition type not allowed in if");
-            System.exit(0);
+            System.exit(1);
         }
 
         //Gestisco lo scope del body dell'if
+        node.bn.name = "IfStatNode";
         node.bn.accept(this);
 
         //Nel caso in cui ci sia la condizione else, gestisco lo scope del body dell'else
         if(node.elsebody != null){
+            node.elsebody.name = "ElseStatNode";
             node.elsebody.accept(this);
         }
 
@@ -390,9 +389,9 @@ public class SemanticVisitor implements ISemanticVisitor {
             System.exit(0);
         }
          */
-        if(node.expr.types.get(0) != ValueType.Bool){
+        if(node.expr.type != ValueType.Bool){
             System.err.println("Semantic error: condition type not allowed in while");
-            System.exit(0);
+            System.exit(1);
         }
 
         //BodyNode
@@ -409,9 +408,9 @@ public class SemanticVisitor implements ISemanticVisitor {
         //ExprNode
         node.expr.accept(this);
         //Check id type and expr type
-        if(!checkAssignmentType(node.leaf.type, node.expr.types.get(0))){
+        if(!checkAssignmentType(node.leaf.type, node.expr.type)){
             System.err.println("Semantic Error: ID type does not match with Assign Value type in assign stat for id: " + node.leaf.value);
-            System.exit(0);
+            System.exit(1);
         }
     }
 
@@ -428,9 +427,9 @@ public class SemanticVisitor implements ISemanticVisitor {
         //ExprNode
         if(node.expr != null) {
             node.expr.accept(this);
-            if (node.expr.types.get(0) != ValueType.String) {
-                System.err.println("Semantic Error: the content of expression must be a string, provided: " + node.expr.types.get(0));
-                System.exit(0);
+            if (node.expr.type != ValueType.String) {
+                System.err.println("Semantic Error: the content of expression must be a string, provided: " + node.expr.type);
+                System.exit(1);
             }
         }
 
@@ -445,31 +444,31 @@ public class SemanticVisitor implements ISemanticVisitor {
     }
 
     public void visit(ReturnStatNode node) {
-
+        //Controllo il tipo dell'espressione del return
         node.expr.accept(this);
+
+
 
     }
 
     //Controllo se la funzione chiamante esiste e verifico per il tipo di ritorno
     public void visit(CallFunNode node){
 
-        //Controllo se la funzione chiamata è nel type environmnet,ovvero se la funzione è stata dichiarata in precedenza
+        //Controllo se la funzione chiamata è nel type environmnet,ovvero se è stata dichiarata, quindi se è nella tabella global
         SymbolTable symbolTable = stack.peek();
         SymbolTableEntry symbolTableEntry = null;
-        try {
             if(symbolTable.containsKey(node.leafID.value)){
                 //Mi prendo la firma associata alla funzione dichiarata in precedenza
                 symbolTableEntry = symbolTable.containsFunctionEntry(node.leafID.value);
+                if(symbolTableEntry == null){
+                    System.err.println("Semantic error: fun " + node.leafID.value + " is not defined");
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(0);
-        }
         //Controllo dei parametri con la symbol table
         if(node.exprList != null) {//caso in cui la funzione ha dei parametri
             if (symbolTableEntry.functionParams.size() != node.exprList.size()) {//Controllo sul numero dei parametri se corrisponde, tra la funzione presente nella symbol table e la chiamata della stessa funzione
                 System.err.println("Semantic error: number of params doesn't match in function " + node.leafID.value + " call. Required : " + symbolTableEntry.functionParams.size() + ", provided: " + node.exprList.size());
-                System.exit(0);
+                System.exit(1);
             }
             else {//Se la funzione nella symbol table ha lo stesso numero di parametri della chiamata a funzione controllo la corrispondenza dei tipi, e della modalità del parametro
                 for (int i = 0; i < symbolTableEntry.functionParams.size(); i++) {
@@ -477,14 +476,14 @@ public class SemanticVisitor implements ISemanticVisitor {
                     if(node.exprList.get(i).mod == null){
                          node.exprList.get(i).setMode("in");
                     }
-                    if (!checkAssignmentType(node.exprList.get(i).types.get(0), symbolTableEntry.functionParams.get(i))) {
-                        System.err.println("Semantic error: type mismatch for call fun " + node.leafID.value + ". Required: " + symbolTableEntry.functionParams + "  , provided: '" + node.exprList.get(i).types.get(0) + "' in position " + i);
-                        System.exit(0);
+                    if (!checkAssignmentType(node.exprList.get(i).type, symbolTableEntry.functionParams.get(i))) {
+                        System.err.println("Semantic error: type mismatch for call fun " + node.leafID.value + ". Required: " + symbolTableEntry.functionParams + "  , provided: '" + node.exprList.get(i).type + "' in position " + i);
+                        System.exit(1);
                     }
                     //Controllo sulla corrispondenza della modalità dei parametri
                     if(!node.exprList.get(i).mod.mod.equals(symbolTableEntry.modeParams.get(i).mod)) {
                         System.err.println("Semantic error: mode param mismatch for callfun: " + node.leafID.value);
-                        System.exit(0);
+                        System.exit(1);
                     }
                 }
             }
@@ -493,7 +492,7 @@ public class SemanticVisitor implements ISemanticVisitor {
         else {
             if(symbolTableEntry.functionParams.size() != 0) {
                 System.err.println("Semantic error: type mismatch for input params of call proc " + node.leafID.value + ". Required: " + symbolTableEntry.functionParams);
-                System.exit(0);
+                System.exit(1);
             }
         }
         //Controllo sul tipo di ritorno
@@ -530,45 +529,45 @@ public class SemanticVisitor implements ISemanticVisitor {
                             exprNode.name.equalsIgnoreCase("PowOp")
             ) {
                 //Se takenType == null -> Errore per tipi non compatibili
-                ValueType takenType = getType_Operations(((ExprNode) exprNode.value1).types.get(0),
-                                                        ((ExprNode) exprNode.value2).types.get(0));
+                ValueType takenType = getType_Operations(((ExprNode) exprNode.value1).type,
+                                                        ((ExprNode) exprNode.value2).type);
                 if(takenType == null){
-                    System.err.println("Semantic error: type not compatible with operation (" + exprNode.name + "). First type: " + ((ExprNode) exprNode.value1).types.get(0) + ", second type: " + ((ExprNode) exprNode.value2).types.get(0));
-                    System.exit(0);
+                    System.err.println("Semantic error: type not compatible with operation (" + exprNode.name + "). First type: " + ((ExprNode) exprNode.value1).type + ", second type: " + ((ExprNode) exprNode.value2).type);
+                    System.exit(1);
                 } else {
                     exprNode.setType(takenType);//Altrimenti setto il tipo di exprNode col tipo risultante dell'operazione
                  }
                 }
             //DIVINT
             else if(exprNode.name.equalsIgnoreCase("DivIntOp")){
-                ValueType takenType = getType_DivIntOp(((ExprNode) exprNode.value1).types.get(0),
-                        ((ExprNode) exprNode.value2).types.get(0));
+                ValueType takenType = getType_DivIntOp(((ExprNode) exprNode.value1).type,
+                        ((ExprNode) exprNode.value2).type);
                 if(takenType == null){
                     System.err.println("Semantic error: type not compatible with operation (" + exprNode.name + "). For this operation the first and second argument's types must be Integer");
-                    System.exit(0);
+                    System.exit(1);
                 } else {
                     exprNode.setType(takenType);
                 }
             }
             //AND,OR
             else if (exprNode.name.equalsIgnoreCase("AndOp") || exprNode.name.equalsIgnoreCase("OrOP")) {
-                ValueType takenType = getType_AndOr(((ExprNode) exprNode.value1).types.get(0),
-                                                    ((ExprNode) exprNode.value2).types.get(0));
+                ValueType takenType = getType_AndOr(((ExprNode) exprNode.value1).type,
+                                                    ((ExprNode) exprNode.value2).type);
 
                 if(takenType == null) {
-                    System.err.println("Semantic error: type not compatible with operation (" + exprNode.name + "). Required: [Boolean, Boolean], provided: [" + ((ExprNode) exprNode.value1).types.get(0) + ", " + ((ExprNode) exprNode.value2).types.get(0) + "]");
-                    System.exit(0);
+                    System.err.println("Semantic error: type not compatible with operation (" + exprNode.name + "). Required: [Boolean, Boolean], provided: [" + ((ExprNode) exprNode.value1).type + ", " + ((ExprNode) exprNode.value2).type + "]");
+                    System.exit(1);
                 } else {
                     exprNode.setType(takenType);
                 }
             }
             //STR_CONCAT
             else if(exprNode.name.equalsIgnoreCase("StrCatOp")){
-                ValueType takenType = getType_StrConcat(((ExprNode) exprNode.value1).types.get(0),
-                        ((ExprNode) exprNode.value2).types.get(0));
+                ValueType takenType = getType_StrConcat(((ExprNode) exprNode.value1).type,
+                        ((ExprNode) exprNode.value2).type);
                 if(takenType == null) {
                     System.err.println("Semantic error: type not compatible with operation (" + exprNode.name + "). Required first type: " + ValueType.String);
-                    System.exit(0);
+                    System.exit(1);
                 } else {
                     exprNode.setType(takenType);
                 }
@@ -582,11 +581,11 @@ public class SemanticVisitor implements ISemanticVisitor {
                 }
                  */
                 // Se takenType == null -> Errore per tipi non compatibili
-                ValueType takenType = getType_Boolean(((ExprNode) exprNode.value1).types.get(0),
-                        ((ExprNode) exprNode.value2).types.get(0));
+                ValueType takenType = getType_Boolean(((ExprNode) exprNode.value1).type,
+                        ((ExprNode) exprNode.value2).type);
                 if(takenType == null){
-                    System.err.println("Semantic error: type not compatible with logical operation (" + exprNode.name + "). First type: " + ((ExprNode) exprNode.value1).types.get(0) + ", second type: " + ((ExprNode) exprNode.value2).types.get(0));
-                    System.exit(0);
+                    System.err.println("Semantic error: type not compatible with logical operation (" + exprNode.name + "). First type: " + ((ExprNode) exprNode.value1).type + ", second type: " + ((ExprNode) exprNode.value2).type);
+                    System.exit(1);
                 } else
                     exprNode.setType(takenType);
             }
@@ -622,29 +621,29 @@ public class SemanticVisitor implements ISemanticVisitor {
             //CallFun
             else if (exprNode.value1 instanceof CallFunNode) {
                 ((CallFunNode) exprNode.value1).accept(this);
-                exprNode.setTypes(((CallFunNode) exprNode.value1).types);
+                exprNode.setType(((CallFunNode) exprNode.value1).type);
             }
 
 
             //Operatore unario MINUS
             else if(exprNode.name.equalsIgnoreCase("UminusOp")) {
                 ((ExprNode) exprNode.value1).accept(this);
-                if(((ExprNode) exprNode.value1).types.get(0) == ValueType.Integer ||
-                        ((ExprNode) exprNode.value1).types.get(0) == ValueType.Real)
-                    exprNode.setType(((ExprNode)exprNode.value1).types.get(0));
+                if(((ExprNode) exprNode.value1).type == ValueType.Integer ||
+                        ((ExprNode) exprNode.value1).type == ValueType.Real)
+                    exprNode.setType(((ExprNode)exprNode.value1).type);
                 else {
-                    System.err.println("Semantic error: type mismatch for 'Uminus' operation. Required type: Integer or Real, provided: " + ((ExprNode) exprNode.value1).types.get(0));
-                    System.exit(0);
+                    System.err.println("Semantic error: type mismatch for 'Uminus' operation. Required type: Integer or Real, provided: " + ((ExprNode) exprNode.value1).type);
+                    System.exit(1);
                 }
             }
             //Operatore unario NOT
             else if(exprNode.name.equalsIgnoreCase("NotOp")) {
                 ((ExprNode) exprNode.value1).accept(this);
-                if(((ExprNode) exprNode.value1).types.get(0) == ValueType.Bool)
-                    exprNode.setType(((ExprNode)exprNode.value1).types.get(0));
+                if(((ExprNode) exprNode.value1).type == ValueType.Bool)
+                    exprNode.setType(((ExprNode)exprNode.value1).type);
                 else {
-                    System.err.println("Semantic error: type mismatch for 'NOT' operation. Required type: Boolean, provided: " + ((ExprNode) exprNode.value1).types.get(0));
-                    System.exit(0);
+                    System.err.println("Semantic error: type mismatch for 'NOT' operation. Required type: Boolean, provided: " + ((ExprNode) exprNode.value1).type);
+                    System.exit(1);
                 }
             }
         }
@@ -658,16 +657,13 @@ public class SemanticVisitor implements ISemanticVisitor {
     public void visit(LeafID leaf){
         //Mi prendo la symbol table sul top dello stack
         SymbolTable symbolTable = stack.peek();
-        try{
             //controllo se esiste già un'id con lo stesso nome nella symboltable (look up di id all'interno della symbol table corrente, cioè all'interno dello scope corrente)
             if(symbolTable.containsKey(leaf.value)) {//se è gia presente mi prendo l'entry associata
                 SymbolTableEntry symbolTableEntry = null;
-                try {
                     symbolTableEntry = symbolTable.containsEntry(leaf.value);
-                } catch (Exception e){
-                    e.printStackTrace();
-                    System.exit(0);
-                }
+                    if(symbolTableEntry == null){
+                        System.err.println("Semantic error: variable " + leaf.value + " is not declared");
+                    }
                 /*
                 // Se richiamo l'id di una proc senza gli argomenti
                 if (symbolTableEntry.valueType == null) {
@@ -678,10 +674,6 @@ public class SemanticVisitor implements ISemanticVisitor {
                 //Tramite look up mi prendo il valore contenuto nella tabella dei simboli dell'id passato come parametro e lo assegno al suo tipo
                 leaf.type = symbolTableEntry.valueType;
             }
-        } catch(Exception e) {
-            e.printStackTrace();
-            System.exit(0);
-        }
     }
 
     public void visit(LeafBool leaf){

@@ -1,0 +1,13 @@
+fun isPrimo(integer num):bool
+
+   if num > 5 then
+        return true;
+    else
+        return false;
+    end if;
+
+end fun;
+
+main
+
+end main;

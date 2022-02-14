@@ -30,66 +30,92 @@ public class SymbolTable extends HashMap<String,SymbolTableEntry> {
             return pointerToFather;
         }
 
+        //-----Costruttore----
+        public SymbolTable(String name){
+            this.symbolTableName = name;
+        }
+
         // Aggiunge una variabile all'interno della tabella corrente
-        public void createEntry_variable(String id, String type) throws Exception {
-            if(super.containsKey(id)) throw new Exception("Semantic error in " + symbolTableName + ": identifier " + id + " already declared in the actual scope");
-            else super.put(id,new SymbolTableEntry(id,StringToType(type)));
+        public boolean createEntry_variable(String id, String type) {
+            if(super.containsKey(id)){
+                return false;
+            }
+            else {
+                super.put(id,new SymbolTableEntry(id,StringToType(type)));
+                return true;
+            }
         }
 
         //------Funzioni di accesso/scrittura alla symbol table
 
         // Aggiunge una funzione all'interno della tabella corrente
-        public void createEntry_function(String id, ArrayList<ModeParNode> modeParams, ArrayList<ValueType> inputParams, ValueType returnParams) throws Exception {
-            if (super.containsKey(id)) throw new Exception("Semantic error in " + symbolTableName + ": identifier " + id + " already declared in the actual scope");
-            else super.put(id, new SymbolTableEntry(id, modeParams, inputParams, returnParams));
+        public boolean createEntry_function(String id, ArrayList<ModeParNode> modeParams, ArrayList<ValueType> inputParams, ValueType returnParams) {
+            if (super.containsKey(id)){
+                return false;
+            }
+            else{
+                super.put(id, new SymbolTableEntry(id, modeParams, inputParams, returnParams));
+                return true;
+            }
         }
 
         // Ritorna la variabile con ID se contenuta altrimenti NULL
-        public SymbolTableEntry containsEntry(String id) throws Exception {
+        public SymbolTableEntry containsEntry(String id) {
             SymbolTableEntry symbolTableEntry = null;
             if(super.containsKey(id)) {
                 symbolTableEntry = super.get(id);
             } else if(hasFatherSymTab()) {//Verifica se è presente all'interno della tabella padre
                 symbolTableEntry = getFatherSymTab().containsEntry(id);
-            } else {
-                throw new Exception("Semantic error: variable " + id + " is not declared");
             }
             return symbolTableEntry;
         }
 
         // Verifica se l'ID è contenuto ricorsivamente fino a tabella Global
-        public Boolean containsKey(String id) throws Exception {
+        public Boolean containsKey(String id) {
             if(super.containsKey(id)){
                 return true;
             } else if (hasFatherSymTab()) {
                 return getFatherSymTab().containsKey(id);
             } else {
-                throw new Exception("Semantic error: variable or function "  + id + " is not delcared");
+                return false;
             }
         }
 
         // Ritorna la funzione con ID se contenuta altrimenti NULL
-        public SymbolTableEntry containsFunctionEntry(String id) throws Exception {
+        public SymbolTableEntry containsFunctionEntry(String id) {
             SymbolTableEntry symbolTableEntry = null;
             if(super.containsKey(id) && !super.get(id).isVariable()) {
                 symbolTableEntry = super.get(id);
             } else if (hasFatherSymTab()) {
                 symbolTableEntry = getFatherSymTab().containsFunctionEntry(id);
-            } else {
-                throw new Exception("Semantic error: fun " + id + " is not defined");
             }
             return symbolTableEntry;
         }
 
         //Converte in ValueType
-        public static ValueType StringToType(String type) throws Exception {
-            if(type.equalsIgnoreCase("integer")) return ValueType.Integer;
-            if(type.equalsIgnoreCase("string")) return ValueType.String;
-            if(type.equalsIgnoreCase("real")) return ValueType.Real;
-            if(type.equalsIgnoreCase("bool")) return ValueType.Bool;
-            if(type.equalsIgnoreCase("void")) return ValueType.Void;
-            if(type.equalsIgnoreCase("var")) return ValueType.Var;
-            throw new Exception("Semantic error: type " + type + " does not exists");
+        public static ValueType StringToType(String type)  {
+            if(type.equalsIgnoreCase("integer")){
+                return ValueType.Integer;
+            }
+            if(type.equalsIgnoreCase("string")){
+                return ValueType.String;
+            }
+            if(type.equalsIgnoreCase("real")){
+                return ValueType.Real;
+            }
+            if(type.equalsIgnoreCase("bool")){
+                return ValueType.Bool;
+            }
+            if(type.equalsIgnoreCase("void")){
+                return ValueType.Void;
+            }
+            if(type.equalsIgnoreCase("var")){
+                return ValueType.Var;
+            }
+            else {
+                System.err.println("Semantic error: type " + type + " does not exists");
+                System.exit(1);
+                return null;
+            }
         }
-
 }

@@ -29,8 +29,9 @@ public class CallFunNode implements StatNode, ISyntaxVisitable,ISemanticVisitabl
     }
 
     //Semantic check
-    public ArrayList<ValueType> types = new ArrayList<>();
+    public ValueType type = null;
 
+    /*
     public void setTypes(ArrayList t) {
         try {
             for (int i = 0; i < t.size(); i++) {
@@ -43,10 +44,10 @@ public class CallFunNode implements StatNode, ISyntaxVisitable,ISemanticVisitabl
             e.printStackTrace();
         }
     }
-
+    */
     public void setType(String t) {
         try {
-            this.types.add(SymbolTable.StringToType(t));
+            this.type = SymbolTable.StringToType(t);
         } catch (Exception e) {
             System.exit(0);
             e.printStackTrace();
@@ -55,7 +56,7 @@ public class CallFunNode implements StatNode, ISyntaxVisitable,ISemanticVisitabl
 
     public void setType(ValueType t) {
         try {
-            this.types.add(t);
+            this.type = t;
         } catch (Exception e) {
             System.exit(0);
             e.printStackTrace();

@@ -6,6 +6,8 @@ import support.SymbolTable;
 import support.ValueType;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 
@@ -15,22 +17,30 @@ public class CVisitor implements ICVisitor {
     private String actualFunName = "";
     private String actualName = "";
     ArrayList<String> outParName = null;
-    boolean flagInt = false;
+    //boolean flagInt = false;
+    public static String FILE_NAME = "c_gen.c";
+    private static File FILE;
 
-    public CVisitor(String name) throws IOException {
-        File file = new File(name.substring(0,name.length()-4).split("/")[1] + ".c");
-        if(file.createNewFile()){
-            //File non esistente, lo crea
-            System.out.println("File " + file.getName() + " created");
-        } else {
-            //File esistente
+    public CVisitor() throws IOException {
+        /*int lastIndex = name.lastIndexOf(File.separator);
+
+        File file = new File("test_files" + File.separator + "c_out" + File.separator + name.substring(lastIndex, name.length() - 4) + ".c");
+        if (file.exists()) {
             file.delete();
-            file.createNewFile();
-            System.out.println("File " + file.getName() + " created");
         }
+        file.createNewFile();
+        System.out.print("File " + file.getName() + " creato nella cartella \"test_files" + File.separator + "c_out\" !!!");
+        */
+        // Inizializzo il file di scrittura
+        if (!(new File("test_files" + File.separator + "c_out" + File.separator)).exists()) {
+            Files.createDirectory(Paths.get("test_files" + File.separator + "c_out" + File.separator));
+        }
+        FILE = new File("test_files" + File.separator + "c_out" + File.separator + FILE_NAME);
+        FILE.createNewFile();
 
-        writer = new PrintWriter(file);
+        writer = new PrintWriter(FILE);
     }
+
 
     public void visit(ProgramNode node) {
         writer.println("#include <stdio.h>");
@@ -104,6 +114,7 @@ public class CVisitor implements ICVisitor {
         writer.print("strcpy(concat, string);\n");
         writer.print("strcat(concat, toConcat);\n");
         writer.print("return concat;\n}\n");
+        writer.print("\n");
 
         //ArrayList<VarDeclNode>
         if(node.nodeArrayList != null) {
@@ -123,11 +134,10 @@ public class CVisitor implements ICVisitor {
         //BodyNode
         writer.println("int main () {\n");
         node.bodyNode.accept(this);
-        writer.println("return 0;");
+        writer.println("return 0;\n");
         writer.println("}");
         writer.close();
 
-        //return argumentsMain;
     }
 
     public void visit(BodyNode node){
@@ -165,7 +175,6 @@ public class CVisitor implements ICVisitor {
     }
 
     public void visit(TypeNode node) {
-        try{
             if(SymbolTable.StringToType(node.type) == ValueType.Integer) {
                 writer.print("int ");
             } else if(SymbolTable.StringToType(node.type) == ValueType.Real){
@@ -175,20 +184,9 @@ public class CVisitor implements ICVisitor {
             } else if(SymbolTable.StringToType(node.type) == ValueType.Bool){
                 writer.print("bool ");
             }
-            /*
-            else {
-                writer.print("void ");
-            }
-            */
-        } catch (Exception e){
-            e.printStackTrace();
-            System.exit(0);
-        }
     }
 
     public void visit(IdInitNode node) {
-
-        boolean flag = false;
 
         //LeafID
         node.leaf.accept(this);
@@ -199,50 +197,35 @@ public class CVisitor implements ICVisitor {
 
 
         //ExprNode
-        if(node.expr != null){
-            if(node.type == ValueType.String){
+        if(node.expr != null) {
+            if (node.type == ValueType.String) {
                 writer.print(";\n");
                 writer.print("strcpy(");
                 node.leaf.accept(this);
                 writer.print(", ");
                 node.expr.accept(this);
                 writer.print(")");
-            }
-            else {
+            } else {
                 writer.print(" = ");
                 node.expr.accept(this);
             }
-            if(node.expr.value1 instanceof CallFunNode){
-                flag = true;
-            }
         }
-
-
-        //ConstNode
-        if(node.c != null){
-            if(node.type == ValueType.String){
+        //ConstNode (VAR)
+        if(node.c != null) {
+            if (node.type == ValueType.String) {
                 writer.print(";\n");
                 writer.print("strcpy(");
                 node.leaf.accept(this);
                 writer.print(", ");
                 node.c.accept(this);
                 writer.print(")");
-            }
-            else {
+            } else {
                 writer.print(" = ");
                 node.c.accept(this);
             }
-           if(node.c.value1 instanceof CallFunNode){
-                flag = true;
-            }
         }
 
-        if(flag){
-        }
-        else {
-        //writer.println("");
             writer.print(";\n");
-        }
     }
 
     public void visit(ConstNode constNode){
@@ -263,18 +246,14 @@ public class CVisitor implements ICVisitor {
     }
 
     public void visit(FunNode node){
+
         writer.println("\n//Fun " + node.leaf.value);
-        //this.actualFunName = node.leaf.value;
 
         this.outParName = new ArrayList<>();
 
         if(node.getTypeNode() != null){
+
                 node.typeNode.accept(this);
-
-                /*if(node.typeNode.type.equals("STRING")){
-                    writer.print("*");
-                }*/
-
         }
         else {
             writer.print("void ");
@@ -301,68 +280,6 @@ public class CVisitor implements ICVisitor {
 
         writer.println("}\n\n");
 
-        /*
-        //node.typeNode.accept(this);
-        //Controllo sul tipo di ritorno della funzione
-        if(node.getTypeNode() == null){
-            writer.print("void " + node.leaf.value);
-            //Controllo nel caso in cui la funzione non abbia parametri
-            if(node.pardecl.size() == 0){
-                writer.println("() {");
-            }
-            //Caso in cui la funzione ha dei parametri
-            else if(node.pardecl != null && node.pardecl.size() > 0) {
-                writer.print("(");
-                ParDeclNode lastParDeclNode = node.pardecl.get(node.pardecl.size() - 1);
-                for(ParDeclNode parDeclNode : node.pardecl) {
-                    parDeclNode.accept(this);
-                    if(parDeclNode.mod.mod.equals("out")){
-                      outParName.add(parDeclNode.leaf.value);
-                    }
-                    if(lastParDeclNode != parDeclNode){
-                        writer.print(",");
-                    }
-                }
-                writer.println(") {");
-            }
-        }
-        //Caso in cui la funzione ha un tipo di ritorno diverso da void
-        else {
-            //Mi prendo il tipo di ritorno
-            node.typeNode.accept(this);
-
-            //Controllo se il tipo di ritorno è una stringa per inserire il puntatore (*)
-            if(node.typeNode.type.equalsIgnoreCase("String")){
-                writer.print("* ");
-            }
-
-            //Stampo il nome della funzione
-            writer.print(node.leaf.value);
-
-            //Parametri
-            if(node.pardecl.size() == 0){
-                writer.println("() {");
-            }
-            //Caso in cui ho i parametri
-            else if(node.pardecl != null && node.pardecl.size() > 0) {
-                writer.print("(");
-                    for(ParDeclNode parDeclNode : node.pardecl){
-                        parDeclNode.accept(this);
-                        if(parDeclNode.mod.mod.equals("out")){
-                            outParName.add(parDeclNode.leaf.value);
-                        }
-                        if(node.pardecl.get(node.pardecl.size() - 1 ) != parDeclNode) {
-                            writer.print(",");
-                        }
-                    }
-                    writer.println(") {");
-            }
-        }
-        //Vado a gestire il body della funzione
-        node.bodyNode.accept(this);
-        outParName.clear();
-        writer.println("}\n\n");
-        */
 
     }
 
@@ -370,22 +287,16 @@ public class CVisitor implements ICVisitor {
 
         //Mi prendo il tipo del parametro
         node.typeNode.accept(this);
-        /*if(node.typeNode.type.equalsIgnoreCase("String")){
-            writer.print("* ");
-        }*/
+
         //node.mod.accept(this);
         if(node.mod.mod.equals("out")){
             this.outParName.add(node.leaf.value);
             //writer.print("*");
         }
 
-        /*if(node.typeNode.type.equals("STRING")){
-            writer.print("*");
-        }*/
         //Mi prendo il nome del parametro
         node.leaf.accept(this);
 
-        //writer.print(",");
     }
 
     public void visit(ModeParNode node){
@@ -418,6 +329,8 @@ public class CVisitor implements ICVisitor {
                 case "CallFunNode":
                     CallFunNode callFunNode = (CallFunNode) statNode;
                     callFunNode.accept(this);
+                    //Aggiunta per gestire il caso isolato di chiamata di funzione
+                    writer.print(";\n");
                     break;
                 case "ReturnStatNode":
                     ReturnStatNode returnStatNode = (ReturnStatNode) statNode;
@@ -486,13 +399,13 @@ public class CVisitor implements ICVisitor {
     }
 
     public void visit(WriteStatNode node) {
-        if(node.expr.types.get(0).equals(ValueType.Integer) || node.expr.types.get(0).equals(ValueType.Bool)){
+        if(node.expr.type.equals(ValueType.Integer) || node.expr.type.equals(ValueType.Bool)){
             writer.print("printf(\"%d\\n\", ");
         }
-        if(node.expr.types.get(0).equals(ValueType.String)){
+        if(node.expr.type.equals(ValueType.String)){
             writer.print("printf(\"%s\\n\", ");
         }
-        if(node.expr.types.get(0).equals(ValueType.Real)){
+        if(node.expr.type.equals(ValueType.Real)){
             writer.print("printf(\"%f\\n\", ");
         }
         node.expr.accept(this);
@@ -509,7 +422,7 @@ public class CVisitor implements ICVisitor {
         else if(node.node.name.equals("writet")){
             writer.println("printf(\"\\t\");");
         }
-        //Case ? (Non faccio nulla perchè è una stampa normale
+        //Case ? (Non faccio nulla perchè è una stampa normale)
 
     }
 
@@ -522,42 +435,13 @@ public class CVisitor implements ICVisitor {
 
 
     public void visit(AssignStatNode node) {
-        /*
-        int i = 0;
-        for(i = 0; i < outParName.size();){
-            if(outParName.get(i).equals(node.leaf.value)){
-                writer.print("*");
-            }
-            i++;
-        }
-        */
-        //if(node.leaf.type.equals(ValueType.String)){
+
+            //Gestisco il nome della variabile a cui assegnare l'espressione
             node.leaf.accept(this);
             writer.print(" = ");
+            //Gestisco l'espressione
             node.expr.accept(this);
-            //writer.print("));\n");
-            //writer.print("strcpy(");
-            /*for(i = 0; i < outParName.size();){
-                if(outParName.get(i).equals(node.leaf.value)){
-                    writer.print("*");
-                }
-                i++;
-            }
-            */
-            //node.leaf.accept(this);
-            //writer.print(", ");
-            //node.expr.accept(this);
-            //writer.println(");");
-        //}
-       // else {
-         //   node.leaf.accept(this);
-           // writer.print(" = ");
-           // node.expr.accept(this);
-            if(node.expr.value1 instanceof CallFunNode){
-            }
-            else {
-                writer.println(";\n");
-            }
+            writer.print(";\n");
         }
 
     public void visit(CallFunNode node) {
@@ -568,7 +452,7 @@ public class CVisitor implements ICVisitor {
             writer.print("(");
             ExprNode lastExprNode = node.exprList.get(node.exprList.size() - 1);
             for(ExprNode exprNode : node.exprList) {
-                if(exprNode.mod.mod.equals("out")){
+                if(exprNode.mod.mod.equalsIgnoreCase("out")){
                     writer.print("&");
                     exprNode.leaf.accept(this);
                 }
@@ -576,10 +460,10 @@ public class CVisitor implements ICVisitor {
                 if(exprNode != lastExprNode)
                     writer.print(", ");
             }
-            writer.println(");");
+            writer.print(")");
         }
         else {
-            writer.println("();");
+            writer.print("()");
         }
 
     }
@@ -627,59 +511,27 @@ public class CVisitor implements ICVisitor {
                     ((ExprNode) exprNode.value2).accept(this);
                     break;
                 case "GTOp":
-                    if(((ExprNode) exprNode.value1).types.get(0) == ValueType.String) {
-                        writer.print("\tstrcmp(");
-                        ((ExprNode) exprNode.value1).accept(this);
-                        writer.print(", ");
-                        ((ExprNode) exprNode.value2).accept(this);
-                        writer.print(") > 0");
-                    } else {
-                        ((ExprNode) exprNode.value1).accept(this);
-                        writer.print(" > ");
-                        ((ExprNode) exprNode.value2).accept(this);
-                    }
+                    ((ExprNode) exprNode.value1).accept(this);
+                    writer.print(" > ");
+                    ((ExprNode) exprNode.value2).accept(this);
                     break;
                 case "GEOp":
-                    if(((ExprNode) exprNode.value1).types.get(0) == ValueType.String){
-                        writer.print("strcmp(");
-                        ((ExprNode) exprNode.value1).accept(this);
-                        writer.print(", ");
-                        ((ExprNode) exprNode.value2).accept(this);
-                        writer.print(") >= 0");
-                    } else {
-                        ((ExprNode) exprNode.value1).accept(this);
-                        writer.print(" >= ");
-                        ((ExprNode) exprNode.value2).accept(this);
-                    }
+                    ((ExprNode) exprNode.value1).accept(this);
+                    writer.print(" >= ");
+                    ((ExprNode) exprNode.value2).accept(this);
                     break;
                 case "LTOp":
-                    if(((ExprNode) exprNode.value1).types.get(0) == ValueType.String) {
-                        writer.print("strcmp(");
-                        ((ExprNode) exprNode.value1).accept(this);
-                        writer.print(", ");
-                        ((ExprNode) exprNode.value2).accept(this);
-                        writer.print(") < 0");
-                    } else {
-                        ((ExprNode) exprNode.value1).accept(this);
-                        writer.print(" < ");
-                        ((ExprNode) exprNode.value2).accept(this);
-                    }
+                    ((ExprNode) exprNode.value1).accept(this);
+                    writer.print(" < ");
+                    ((ExprNode) exprNode.value2).accept(this);
                     break;
                 case "LEOp":
-                    if (((ExprNode) exprNode.value1).types.get(0) == ValueType.String) {
-                        writer.print("strcmp(");
-                        ((ExprNode) exprNode.value1).accept(this);
-                        writer.print(", ");
-                        ((ExprNode) exprNode.value2).accept(this);
-                        writer.print(") <= 0");
-                    } else {
-                        ((ExprNode) exprNode.value1).accept(this);
-                        writer.print(" <= ");
-                        ((ExprNode) exprNode.value2).accept(this);
-                    }
+                    ((ExprNode) exprNode.value1).accept(this);
+                    writer.print(" <= ");
+                    ((ExprNode) exprNode.value2).accept(this);
                     break;
                 case "EQOp":
-                    if (((ExprNode) exprNode.value1).types.get(0) == ValueType.String) {
+                    if (((ExprNode) exprNode.value1).type == ValueType.String) {
                         writer.print("strcmp(");
                         ((ExprNode) exprNode.value1).accept(this);
                         writer.print(", ");
@@ -692,7 +544,7 @@ public class CVisitor implements ICVisitor {
                     }
                     break;
                 case "NEOp":
-                if (((ExprNode) exprNode.value1).types.get(0) == ValueType.String) {
+                if (((ExprNode) exprNode.value1).type == ValueType.String) {
                     writer.print("strcmp(");
                     ((ExprNode) exprNode.value1).accept(this);
                     writer.print(", ");
@@ -705,53 +557,34 @@ public class CVisitor implements ICVisitor {
                 }
                 break;
                 case "StrCatOp":
-                                    if(((ExprNode) exprNode.value2).types.get(0) == ValueType.Integer){
+                                    if(((ExprNode) exprNode.value2).type == ValueType.Integer){
                                         writer.print("concatInt( ");
                                         ((ExprNode) exprNode.value1).accept(this);
                                         writer.print(", ");
                                         ((ExprNode) exprNode.value2).accept(this);
                                         writer.print(")");
                                     }
-                                    if(((ExprNode) exprNode.value2).types.get(0) == ValueType.Real){
+                                    if(((ExprNode) exprNode.value2).type == ValueType.Real){
                                         writer.print("concatReal( ");
                                         ((ExprNode) exprNode.value1).accept(this);
                                         writer.print(", ");
                                         ((ExprNode) exprNode.value2).accept(this);
                                         writer.print(")");
                                     }
-                                    if(((ExprNode) exprNode.value2).types.get(0) == ValueType.Bool){
+                                    if(((ExprNode) exprNode.value2).type == ValueType.Bool){
                                         writer.print("concatBool( ");
                                         ((ExprNode) exprNode.value1).accept(this);
                                         writer.print(", ");
                                         ((ExprNode) exprNode.value2).accept(this);
                                         writer.print(")");
                                     }
-                                    if(((ExprNode) exprNode.value2).types.get(0) == ValueType.String){
+                                    if(((ExprNode) exprNode.value2).type == ValueType.String){
                                         writer.print("concatString( ");
                                         ((ExprNode) exprNode.value1).accept(this);
                                         writer.print(", ");
                                         ((ExprNode) exprNode.value2).accept(this);
                                         writer.print(")");
                                     }
-                                    /*
-                                    writer.print("concat_string(");
-                                    //((ExprNode) exprNode.value1).accept(this);
-                                    strConcatSupport((ExprNode) exprNode.value1);
-                                    writer.print(",");
-                                    //((ExprNode) exprNode.value2).accept(this);
-                                    strConcatSupport((ExprNode) exprNode.value2);
-                                    writer.print(")");
-                                    /*if(((ExprNode) exprNode.value1).value2 !=  null) {
-                                        if ((((ExprNode) exprNode.value1).value2) instanceof LeafStringConst) {
-                                        } else {
-                                            writer.print(")");
-                                        }
-                                    }
-                                    if(exprNode.value2 instanceof CallFunNode){
-                                        writer.print(")");
-                                    }
-                                    */
-
                         break;
                     }
             }
@@ -812,6 +645,7 @@ public class CVisitor implements ICVisitor {
 
     }
 
+    /*
     private void strConcatSupport(ExprNode exprNode){
             //ValueType type = ValueType.Integer;
             //ValueType typeReturn = ValueType.Integer;
@@ -844,7 +678,7 @@ public class CVisitor implements ICVisitor {
                }
             }
             else if(exprNode.value1 instanceof CallFunNode){
-                ValueType typeReturn = ((CallFunNode) exprNode.value1).types.get(0);
+                ValueType typeReturn = ((CallFunNode) exprNode.value1).type;
                 if(typeReturn.equals(ValueType.Integer)){
                     writer.print("int_to_string(");
                 }
@@ -865,5 +699,7 @@ public class CVisitor implements ICVisitor {
                  writer.print(")");
              }
         }
+        */
+
 
 }

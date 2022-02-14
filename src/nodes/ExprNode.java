@@ -40,15 +40,12 @@ public class ExprNode implements ISyntaxVisitable, ISemanticVisitable, ICVisitab
         value2 = null;
     }
 
-    public ExprNode(){
-
-    }
 
     //Semantic part
-    public ArrayList<ValueType> types = new ArrayList<>();
+    public ValueType type = null;
 
     //Mi server per gestire l'expr di CallFunNode
-    public void setTypes(ArrayList t) {
+    /*public void setTypes(ArrayList t) {
         try {
             for (int i = 0; i < t.size(); i++) {
                 if (t.get(i) instanceof String)
@@ -60,11 +57,11 @@ public class ExprNode implements ISyntaxVisitable, ISemanticVisitable, ICVisitab
             e.printStackTrace();
         }
     }
-
+*/
 
     public void setType(String t) {
         try {
-            this.types.add(SymbolTable.StringToType(t));
+            this.type = SymbolTable.StringToType(t);
         } catch (Exception e) {
             System.exit(0);
             e.printStackTrace();
@@ -73,7 +70,7 @@ public class ExprNode implements ISyntaxVisitable, ISemanticVisitable, ICVisitab
 
     public void setType(ValueType t) {
         try {
-            this.types.add(t);
+            this.type = t;
         } catch (Exception e) {
             System.exit(0);
             e.printStackTrace();
