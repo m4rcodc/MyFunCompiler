@@ -1,0 +1,110 @@
+#*
+ Programma per il test del progetto scritto in MyFun.
+
+ Questo programma mostra un menu che chiede all'utente di selezionare quale operazione
+ scegliere per poi stampare il risultato a schermo.
+#
+//prova commento
+#prova commento
+
+
+var lp := true;
+
+# Funzione per la generazione del menu
+fun menu()
+   ?. 'Benvenuto in questo programma, quale operazione vuoi svolgere ?';
+   ?. '1: Somma';
+   ?. '2: Sottrazione';
+   ?. '3: Divisione';
+   ?. '4: Moltiplicazione';
+   ?. '5: Exit';
+end fun;
+
+# Funzione per la somma
+fun sum(integer a, real b): real
+
+	real result;
+
+	result  :=  a + b;
+
+	return result;
+
+end fun;
+
+# Funzione per la sottrazione
+fun sub(integer a, real b): real
+
+	real result;
+
+	result  :=  a - b;
+
+	return result;
+
+end fun;
+
+# Funzione per la divisione
+fun divid(integer a, real b): real
+
+	real result;
+
+	result  :=  a / b;
+
+	return result;
+
+end fun;
+
+# Funzione per la moltiplicazione
+fun mol(integer a, real b): real
+
+	real result;
+
+	result  :=  a * b;
+
+	return result;
+
+end fun;
+
+# Funzione Main
+main
+    integer x;
+    real y;
+    var ans := 0;
+    real result;
+
+	while lp = true loop
+		menu();
+        ?: 'Fai la tua scelta:';
+        % ans;
+        if ans = 1 then
+            % x 'Inserisci primo numero da sommare:';
+            % y 'Inserisci secondo numero da sommare:';
+            result := sum(x, y);
+            ?. 'Il risultato è: ' & result & '.';
+	    end if;
+        if ans = 2 then
+            % x 'Inserisci primo numero:';
+            % y 'Inserisci numero da sottrarre al primo:';
+            result := sub(x, y);
+            ?. 'Il risultato è: ' & result & '.';
+	    end if;
+        if ans = 3 then
+            % x 'Inserisci primo numero da dividere:';
+            % y 'Inserisci secondo numero da dividere al primo:';
+            result := divid(x, y);
+            ?. 'Il risultato è: ' & result & '.';
+	    end if;
+        if ans = 4 then
+            % x 'Inserisci primo numero da moltiplicare:';
+            % y 'Inserisci secondo numero da moltiplicare:';
+            result := mol(x, y);
+            ?. 'Il risultato è: ' & result & '.';
+	    end if;
+        if ans = 5 then
+            lp := false;
+	    end if;
+	end loop;
+
+	?. '';
+	? 'Grazie di aver utilizzato questo programma :>';
+
+end main;

@@ -436,7 +436,7 @@ public class SyntaxVisitor implements ISyntaxVisitor{
         DOMSource source = new DOMSource(doc);
 
         //StreamResult result = new StreamResult(new File(name.substring(0, name.length()-4).split("/")[1]+ ".xml"));
-        StreamResult result = new StreamResult(new File(name.substring(0, name.length()-4) + ".xml"));
+        StreamResult result = new StreamResult(new File("test_files" + File.separator + "syntax_tree" + File.separator + name.substring(0, name.length()-4) + ".xml"));
         transformer.transform(source, result);
     }
 

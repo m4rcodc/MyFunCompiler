@@ -65,11 +65,7 @@ Const ::= INTEGER_CONST:val {:RESULT = new ConstNode("INTEGER_CONST", new LeafIn
           | BOOL_CONST:val {:RESULT = new ConstNode("BOOL_CONST", new LeafBool(val)); :}
           | STRING_CONST:val {:RESULT = new ConstNode("STRING_CONST", new LeafStringConst(val)); :}
 ;
-/*
-Bool_Const ::= TRUE:val {:RESULT = new Bool_ConstNode("TRUE", new LeafBool(val)); :}
-               | FALSE:val {:RESULT = new Bool_ConstNode("FALSE", new LeafBool(val)); :}
-;
-*/
+
 Fun ::= FUN ID:id LPAR ParamDeclList:pardecllist RPAR COLON Type:type
 		VarDeclList:vardeclist StatList:statlist END FUN SEMI {: BodyNode b = new BodyNode("BodyOp",(ArrayList<VarDeclNode>)vardeclist,(StatListNode) statlist);
 		                                                        LeafID leafId = new LeafID(id);
@@ -83,13 +79,13 @@ ParamDeclList ::= /*empty */ {: RESULT = new ArrayList<ParDeclNode>(); :}
 	| NonEmptyParamDeclList:notemptyparam {: RESULT = notemptyparam; :}
 ;
 NonEmptyParamDeclList ::= ParDecl:pardecl {: ArrayList<ParDeclNode> l = new ArrayList<ParDeclNode>(); l.add((ParDeclNode) pardecl); RESULT = l; :}
-	| NonEmptyParamDeclList:nepDeclist COMMA ParDecl:pardecl {: ((ArrayList<ParDeclNode>) nepDeclist).add((ParDeclNode) pardecl); RESULT = nepDeclist; :}//?
+	| NonEmptyParamDeclList:nepDeclist COMMA ParDecl:pardecl {: ((ArrayList<ParDeclNode>) nepDeclist).add((ParDeclNode) pardecl); RESULT = nepDeclist; :}
 ;
 ParDecl ::= Type:type ID:id {:RESULT = new ParDeclNode("ParDeclOp", new ModeParNode("in"),(TypeNode) type, new LeafID(id)); :}
 	| OUT Type:type ID:id {:RESULT = new ParDeclNode("ParDeclOp",new ModeParNode("out"),(TypeNode) type, new LeafID(id)); :}
 ;
-StatList ::= /* empty */ {: ArrayList<StatNode> tmp_list = new ArrayList<StatNode>(); RESULT = new StatListNode("StatList", tmp_list); :}//
-	 | Stat:stat StatList:statlist {: ((StatListNode) statlist).add((StatNode)stat); RESULT = statlist; :}//
+StatList ::= /* empty */ {: ArrayList<StatNode> tmp_list = new ArrayList<StatNode>(); RESULT = new StatListNode("StatList", tmp_list); :}
+	 | Stat:stat StatList:statlist {: ((StatListNode) statlist).add((StatNode)stat); RESULT = statlist; :}
 ;
 Stat ::= IfStat:ifstat SEMI {: RESULT = (StatNode) ifstat; :}
 	| WhileStat:whilestat SEMI {: RESULT = (StatNode) whilestat; :}
@@ -110,16 +106,16 @@ RESULT = new IfStatNode("IfOp", (ExprNode) expr, bn , (BodyNode) elseb);}
   RESULT = new IfStatNode("IfOp", (ExprNode) expr, bn);} :}
 ;
 Else ::= /* empty */ {: RESULT = null;:}
-	| ELSE VarDeclList:vardeclist  StatList:statlist {: BodyNode bodynode = new BodyNode("BodyOp", (ArrayList<VarDeclNode>)vardeclist,(StatListNode) statlist); RESULT = bodynode; :}//
+	| ELSE VarDeclList:vardeclist  StatList:statlist {: BodyNode bodynode = new BodyNode("BodyOp", (ArrayList<VarDeclNode>)vardeclist,(StatListNode) statlist); RESULT = bodynode; :}
 ;
 WhileStat ::= WHILE Expr:expr LOOP VarDeclList:varDeclList  StatList:statList END LOOP {:
- BodyNode n = new BodyNode("BodyOp", (ArrayList<VarDeclNode>)varDeclList,(StatListNode) statList); RESULT = new WhileStatNode("WhileOp",(ExprNode) expr, n); :}//
+ BodyNode n = new BodyNode("BodyOp", (ArrayList<VarDeclNode>)varDeclList,(StatListNode) statList); RESULT = new WhileStatNode("WhileOp",(ExprNode) expr, n); :}
 ;
 ReadStat ::= READ IdList:idlist Expr:expr {: RESULT = new ReadStatNode("ReadOp", (ArrayList<LeafID>)idlist, (ExprNode) expr); :}
 	| READ IdList:idlist {: RESULT = new ReadStatNode("ReadOp", (ArrayList<LeafID>)idlist); :}
 ;
 IdList ::= ID:id {: ArrayList<LeafID> l = new ArrayList<LeafID>(); l.add(new LeafID(id)); RESULT= l; :}
-	| IdList:idlist COMMA ID:id {: ((ArrayList)idlist).add(new LeafID(id)); RESULT = idlist;  :}//?
+	| IdList:idlist COMMA ID:id {: ((ArrayList)idlist).add(new LeafID(id)); RESULT = idlist;  :}
 ;
 WriteStat ::=  WRITE  Expr:expr {: RESULT = new WriteStatNode("WriteOp",new ModeWriteNode("write"),(ExprNode) expr);:}
 	| WRITELN  Expr:expr {: RESULT = new WriteStatNode("WriteOp",new ModeWriteNode("writeln"),(ExprNode) expr); :}
@@ -135,8 +131,8 @@ CallFun ::= ID:id LPAR ExprList:exprlist RPAR {: RESULT = new CallFunNode("CallF
 
 ExprList ::= Expr:expr {: ArrayList<ExprNode> l = new ArrayList<ExprNode>(); l.add(0,(ExprNode) expr); RESULT = l; :}
 	| Expr:expr COMMA ExprList:exprList {:((ArrayList<ExprNode>) exprList).add(0,(ExprNode) expr); RESULT = exprList; :}
-	| OUTPAR ID:id {: ExprNode e = new ExprNode("OutPar",new ModeParNode("out"), new LeafID(id)); ArrayList<ExprNode> l_temp= new ArrayList<ExprNode>(); l_temp.add((ExprNode) e); RESULT = l_temp; :}//?
-	| OUTPAR ID:id COMMA ExprList:exprlist {:  ExprNode e = new ExprNode("OutPar",new ModeParNode("out"),new LeafID(id)); ((ArrayList<ExprNode>)exprlist).add(0,(ExprNode) e); RESULT = exprlist; :}//?
+	| OUTPAR ID:id {: ExprNode e = new ExprNode("OutPar",new ModeParNode("out"), new LeafID(id)); ArrayList<ExprNode> l_temp= new ArrayList<ExprNode>(); l_temp.add((ExprNode) e); RESULT = l_temp; :}
+	| OUTPAR ID:id COMMA ExprList:exprlist {:  ExprNode e = new ExprNode("OutPar",new ModeParNode("out"),new LeafID(id)); ((ArrayList<ExprNode>)exprlist).add(0,(ExprNode) e); RESULT = exprlist; :}
 ;
 
 Expr ::= BOOL_CONST:val {: RESULT = new ExprNode("BOOL_CONST", new LeafBool(val)); :}

@@ -6,8 +6,6 @@ import support.SymbolTable;
 import support.SymbolTableEntry;
 import support.Type;
 import support.ValueType;
-
-
 import java.util.ArrayList;
 import java.util.Stack;
 

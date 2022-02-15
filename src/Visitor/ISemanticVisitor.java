@@ -29,6 +29,5 @@ public interface ISemanticVisitor {
     public void visit(BodyNode bodyNode);
     public void visit(StatListNode statListNode);
     public void visit(ConstNode constNode);
-    //public void visit(Bool_ConstNode bool_constNode);
 
 }
