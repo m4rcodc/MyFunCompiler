@@ -1,0 +1,33 @@
+fun isPrimo(integer num, integer div_cor):bool
+    if div_cor < num then
+        integer divisione := num div div_cor;
+        integer rest := num - divisione * div_cor;
+        if rest != 0 then
+            return isPrimo(num, div_cor + 1);
+        else
+            return false;
+        end if;
+    else
+        return true;
+    end if;
+end fun;
+
+main
+    integer num;
+    string nome_programma := "\'Calcolo numeri primi\'";
+    ?. "Benvenuto in " & nome_programma;
+    %num "Inserire un numero positivo: ";
+    while num < 0 loop
+        ?. "Il numero " & num & " non e\' positivo, riprova";
+        %num "Inserire numero: ";
+    end loop;
+    if num > 1 then
+        if isPrimo(num, 2) then
+            ? num;
+            ?. " e\' primo";
+        else
+            ? num;
+            ?. " non e\' primo";
+        end if;
+    end if;
+end main;
