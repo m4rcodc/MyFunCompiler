@@ -1,5 +1,4 @@
 package Visitor;
-
 import leafs.*;
 import nodes.*;
 import support.SymbolTable;
@@ -304,7 +303,7 @@ public class SemanticVisitor implements ISemanticVisitor {
             flag = false;
         }
         else if(flag == false && returnType == null){
-            System.err.println("Error");
+            System.err.println("Semantic error: wrong return value of function " + symbolTable.symbolTableName + ", required: " + outType);
             System.exit(1);
         }
 
@@ -505,7 +504,7 @@ public class SemanticVisitor implements ISemanticVisitor {
 
 
         if(symbolTableEntry.returnFunParam != node.expr.type){
-            System.err.println("Errore");
+            System.err.println("Semantic error: wrong return value of function " + symbolTable.symbolTableName + ", required: " + symbolTableEntry.returnFunParam + " , provided: " + node.expr.type);
             System.exit(1);
         }
 

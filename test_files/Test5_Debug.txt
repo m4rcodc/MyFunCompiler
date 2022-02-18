@@ -1,6 +1,4 @@
-var a := 1;
-
 main
 
-
+string a := "ciao";
 end main;

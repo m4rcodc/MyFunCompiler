@@ -59,7 +59,7 @@ StringDoubleQuote = \"
 "then" {return new Symbol(sym.THEN);}
 "else" {return new Symbol(sym.ELSE);}
 "while" {return new Symbol(sym.WHILE);}
-"loop" {return new Symbol(sym.LOOP);}//
+"loop" {return new Symbol(sym.LOOP);}
 "%" {return new Symbol(sym.READ);}
 "?" {return new Symbol(sym.WRITE);}
 "?." {return new Symbol(sym.WRITELN);}

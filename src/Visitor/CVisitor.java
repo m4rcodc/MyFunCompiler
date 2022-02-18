@@ -1,5 +1,4 @@
 package Visitor;
-
 import nodes.*;
 import leafs.*;
 import support.SymbolTable;
@@ -527,7 +526,7 @@ public class CVisitor implements ICVisitor {
                         writer.print(")");
                     }
                     if (((ExprNode) exprNode.value2).type == ValueType.Real) {
-                        writer.print("RealConcat( ");
+                        writer.print("DoubleConcat( ");
                         ((ExprNode) exprNode.value1).accept(this);
                         writer.print(", ");
                         ((ExprNode) exprNode.value2).accept(this);

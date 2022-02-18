@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ProgramOp>
+  <VarDeclList/>
+  <FunList/>
+  <BodyOp>
+    <VarDeclList>
+      <VarDeclOp>
+        <StringOp type="STRING"/>
+        <IdInitOp>
+          <LeafID value="a"/>
+          <STRING_CONST>
+            <LeafStringConst value="ciao"/>
+          </STRING_CONST>
+        </IdInitOp>
+      </VarDeclOp>
+    </VarDeclList>
+    <StatList/>
+  </BodyOp>
+</ProgramOp>

@@ -1,0 +1,1151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ProgramOp>
+  <VarDeclList/>
+  <FunList>
+    <FunOp>
+      <LeafID value="print_menu"/>
+      <ParamsList/>
+      <ReturnFunType>
+        <IntOp type="INTEGER"/>
+      </ReturnFunType>
+      <BodyOp>
+        <VarDeclList>
+          <VarDeclOp>
+            <IntOp type="INTEGER"/>
+            <IdInitOp>
+              <LeafID value="choose"/>
+            </IdInitOp>
+          </VarDeclOp>
+        </VarDeclList>
+        <StatList>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value="Scegli l'operazione da svolgere per continuare"/>
+            </STRING_CONST>
+          </WriteOp>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value="\t(1) Somma di due numeri"/>
+            </STRING_CONST>
+          </WriteOp>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value="\t(2) Moltiplicazione di due numeri"/>
+            </STRING_CONST>
+          </WriteOp>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value="\t(3) Divisione intera fra due numeri positivi"/>
+            </STRING_CONST>
+          </WriteOp>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value="\t(4) Elevamento a potenza"/>
+            </STRING_CONST>
+          </WriteOp>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value="\t(5) Successione di Fibonacci (ricorsiva)"/>
+            </STRING_CONST>
+          </WriteOp>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value="\t(6) Successione di Fibonacci (iterativa)"/>
+            </STRING_CONST>
+          </WriteOp>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value="\t(0) Esci"/>
+            </STRING_CONST>
+          </WriteOp>
+          <ReadOp>
+            <idList>
+              <LeafID value="choose"/>
+            </idList>
+            <STRING_CONST>
+              <LeafStringConst value="--&gt; "/>
+            </STRING_CONST>
+          </ReadOp>
+          <ReturnOp>
+            <ID>
+              <LeafID value="choose"/>
+            </ID>
+          </ReturnOp>
+        </StatList>
+      </BodyOp>
+    </FunOp>
+    <FunOp>
+      <LeafID value="do_sum"/>
+      <ParamsList/>
+      <BodyOp>
+        <VarDeclList>
+          <VarDeclOp>
+            <RealOp type="REAL"/>
+            <IdInitOp>
+              <LeafID value="op1"/>
+            </IdInitOp>
+            <IdInitOp>
+              <LeafID value="op2"/>
+            </IdInitOp>
+          </VarDeclOp>
+        </VarDeclList>
+        <StatList>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value="\n(1) SOMMA\n"/>
+            </STRING_CONST>
+          </WriteOp>
+          <ReadOp>
+            <idList>
+              <LeafID value="op1"/>
+            </idList>
+            <STRING_CONST>
+              <LeafStringConst value="Inserisci il primo operando: "/>
+            </STRING_CONST>
+          </ReadOp>
+          <ReadOp>
+            <idList>
+              <LeafID value="op2"/>
+            </idList>
+            <STRING_CONST>
+              <LeafStringConst value="Inserisci il secondo operando: "/>
+            </STRING_CONST>
+          </ReadOp>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value=""/>
+            </STRING_CONST>
+          </WriteOp>
+          <WriteOp>
+            <writeln/>
+            <StrCatOp>
+              <StrCatOp>
+                <StrCatOp>
+                  <StrCatOp>
+                    <StrCatOp>
+                      <STRING_CONST>
+                        <LeafStringConst value="La somma tra "/>
+                      </STRING_CONST>
+                      <ID>
+                        <LeafID value="op1"/>
+                      </ID>
+                    </StrCatOp>
+                    <STRING_CONST>
+                      <LeafStringConst value=" e "/>
+                    </STRING_CONST>
+                  </StrCatOp>
+                  <ID>
+                    <LeafID value="op2"/>
+                  </ID>
+                </StrCatOp>
+                <STRING_CONST>
+                  <LeafStringConst value=" vale "/>
+                </STRING_CONST>
+              </StrCatOp>
+              <AddOp>
+                <ID>
+                  <LeafID value="op1"/>
+                </ID>
+                <ID>
+                  <LeafID value="op2"/>
+                </ID>
+              </AddOp>
+            </StrCatOp>
+          </WriteOp>
+        </StatList>
+      </BodyOp>
+    </FunOp>
+    <FunOp>
+      <LeafID value="do_mul"/>
+      <ParamsList/>
+      <BodyOp>
+        <VarDeclList>
+          <VarDeclOp>
+            <RealOp type="REAL"/>
+            <IdInitOp>
+              <LeafID value="op1"/>
+            </IdInitOp>
+            <IdInitOp>
+              <LeafID value="op2"/>
+            </IdInitOp>
+          </VarDeclOp>
+        </VarDeclList>
+        <StatList>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value="\n(2) MOLTIPLICAZIONE"/>
+            </STRING_CONST>
+          </WriteOp>
+          <ReadOp>
+            <idList>
+              <LeafID value="op1"/>
+            </idList>
+            <STRING_CONST>
+              <LeafStringConst value="\nInserisci il primo operando: "/>
+            </STRING_CONST>
+          </ReadOp>
+          <ReadOp>
+            <idList>
+              <LeafID value="op2"/>
+            </idList>
+            <STRING_CONST>
+              <LeafStringConst value="Inserisci il secondo operando: "/>
+            </STRING_CONST>
+          </ReadOp>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value=""/>
+            </STRING_CONST>
+          </WriteOp>
+          <WriteOp>
+            <writeln/>
+            <StrCatOp>
+              <StrCatOp>
+                <StrCatOp>
+                  <StrCatOp>
+                    <StrCatOp>
+                      <STRING_CONST>
+                        <LeafStringConst value="La moltiplicazione tra "/>
+                      </STRING_CONST>
+                      <ID>
+                        <LeafID value="op1"/>
+                      </ID>
+                    </StrCatOp>
+                    <STRING_CONST>
+                      <LeafStringConst value=" e "/>
+                    </STRING_CONST>
+                  </StrCatOp>
+                  <ID>
+                    <LeafID value="op2"/>
+                  </ID>
+                </StrCatOp>
+                <STRING_CONST>
+                  <LeafStringConst value=" vale "/>
+                </STRING_CONST>
+              </StrCatOp>
+              <MulOp>
+                <ID>
+                  <LeafID value="op1"/>
+                </ID>
+                <ID>
+                  <LeafID value="op2"/>
+                </ID>
+              </MulOp>
+            </StrCatOp>
+          </WriteOp>
+        </StatList>
+      </BodyOp>
+    </FunOp>
+    <FunOp>
+      <LeafID value="do_div_int"/>
+      <ParamsList/>
+      <BodyOp>
+        <VarDeclList>
+          <VarDeclOp>
+            <IntOp type="INTEGER"/>
+            <IdInitOp>
+              <LeafID value="op1"/>
+            </IdInitOp>
+            <IdInitOp>
+              <LeafID value="op2"/>
+            </IdInitOp>
+          </VarDeclOp>
+        </VarDeclList>
+        <StatList>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value="\n(3) DIVISIONE INTERA"/>
+            </STRING_CONST>
+          </WriteOp>
+          <ReadOp>
+            <idList>
+              <LeafID value="op1"/>
+            </idList>
+            <STRING_CONST>
+              <LeafStringConst value="\nInserisci il primo operando: "/>
+            </STRING_CONST>
+          </ReadOp>
+          <ReadOp>
+            <idList>
+              <LeafID value="op2"/>
+            </idList>
+            <STRING_CONST>
+              <LeafStringConst value="Inserisci il secondo operando: "/>
+            </STRING_CONST>
+          </ReadOp>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value=""/>
+            </STRING_CONST>
+          </WriteOp>
+          <WriteOp>
+            <writeln/>
+            <StrCatOp>
+              <StrCatOp>
+                <StrCatOp>
+                  <StrCatOp>
+                    <StrCatOp>
+                      <STRING_CONST>
+                        <LeafStringConst value="La divisione intera tra "/>
+                      </STRING_CONST>
+                      <ID>
+                        <LeafID value="op1"/>
+                      </ID>
+                    </StrCatOp>
+                    <STRING_CONST>
+                      <LeafStringConst value=" e "/>
+                    </STRING_CONST>
+                  </StrCatOp>
+                  <ID>
+                    <LeafID value="op2"/>
+                  </ID>
+                </StrCatOp>
+                <STRING_CONST>
+                  <LeafStringConst value=" vale "/>
+                </STRING_CONST>
+              </StrCatOp>
+              <DivIntOp>
+                <ID>
+                  <LeafID value="op1"/>
+                </ID>
+                <ID>
+                  <LeafID value="op2"/>
+                </ID>
+              </DivIntOp>
+            </StrCatOp>
+          </WriteOp>
+        </StatList>
+      </BodyOp>
+    </FunOp>
+    <FunOp>
+      <LeafID value="do_pow"/>
+      <ParamsList/>
+      <BodyOp>
+        <VarDeclList>
+          <VarDeclOp>
+            <RealOp type="REAL"/>
+            <IdInitOp>
+              <LeafID value="op1"/>
+            </IdInitOp>
+            <IdInitOp>
+              <LeafID value="op2"/>
+            </IdInitOp>
+          </VarDeclOp>
+        </VarDeclList>
+        <StatList>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value="\n(4) POTENZA"/>
+            </STRING_CONST>
+          </WriteOp>
+          <ReadOp>
+            <idList>
+              <LeafID value="op1"/>
+            </idList>
+            <STRING_CONST>
+              <LeafStringConst value="\nInserisci la base: "/>
+            </STRING_CONST>
+          </ReadOp>
+          <ReadOp>
+            <idList>
+              <LeafID value="op2"/>
+            </idList>
+            <STRING_CONST>
+              <LeafStringConst value="Inserisci l'esponente: "/>
+            </STRING_CONST>
+          </ReadOp>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value=""/>
+            </STRING_CONST>
+          </WriteOp>
+          <WriteOp>
+            <writeln/>
+            <StrCatOp>
+              <StrCatOp>
+                <StrCatOp>
+                  <StrCatOp>
+                    <StrCatOp>
+                      <STRING_CONST>
+                        <LeafStringConst value="La potenza di "/>
+                      </STRING_CONST>
+                      <ID>
+                        <LeafID value="op1"/>
+                      </ID>
+                    </StrCatOp>
+                    <STRING_CONST>
+                      <LeafStringConst value=" elevato a "/>
+                    </STRING_CONST>
+                  </StrCatOp>
+                  <ID>
+                    <LeafID value="op2"/>
+                  </ID>
+                </StrCatOp>
+                <STRING_CONST>
+                  <LeafStringConst value=" vale "/>
+                </STRING_CONST>
+              </StrCatOp>
+              <PowOp>
+                <ID>
+                  <LeafID value="op1"/>
+                </ID>
+                <ID>
+                  <LeafID value="op2"/>
+                </ID>
+              </PowOp>
+            </StrCatOp>
+          </WriteOp>
+        </StatList>
+      </BodyOp>
+    </FunOp>
+    <FunOp>
+      <LeafID value="recursive_fib"/>
+      <ParamsList>
+        <ParDeclOp>
+          <ModeOp>
+            <in/>
+          </ModeOp>
+          <IntOp type="INTEGER"/>
+          <LeafID value="n"/>
+        </ParDeclOp>
+      </ParamsList>
+      <ReturnFunType>
+        <IntOp type="INTEGER"/>
+      </ReturnFunType>
+      <BodyOp>
+        <VarDeclList/>
+        <StatList>
+          <IfOp>
+            <ConditionIf>
+              <EQOp>
+                <ID>
+                  <LeafID value="n"/>
+                </ID>
+                <INTEGER_CONST>
+                  <LeafIntegerConst value="1"/>
+                </INTEGER_CONST>
+              </EQOp>
+            </ConditionIf>
+            <BodyOp>
+              <VarDeclList/>
+              <StatList>
+                <ReturnOp>
+                  <INTEGER_CONST>
+                    <LeafIntegerConst value="0"/>
+                  </INTEGER_CONST>
+                </ReturnOp>
+              </StatList>
+            </BodyOp>
+          </IfOp>
+          <IfOp>
+            <ConditionIf>
+              <EQOp>
+                <ID>
+                  <LeafID value="n"/>
+                </ID>
+                <INTEGER_CONST>
+                  <LeafIntegerConst value="2"/>
+                </INTEGER_CONST>
+              </EQOp>
+            </ConditionIf>
+            <BodyOp>
+              <VarDeclList/>
+              <StatList>
+                <ReturnOp>
+                  <INTEGER_CONST>
+                    <LeafIntegerConst value="1"/>
+                  </INTEGER_CONST>
+                </ReturnOp>
+              </StatList>
+            </BodyOp>
+          </IfOp>
+          <ReturnOp>
+            <AddOp>
+              <CallFunOp>
+                <CallFunOp>
+                  <LeafID value="recursive_fib"/>
+                  <ParamsList>
+                    <DiffOp>
+                      <ID>
+                        <LeafID value="n"/>
+                      </ID>
+                      <INTEGER_CONST>
+                        <LeafIntegerConst value="1"/>
+                      </INTEGER_CONST>
+                    </DiffOp>
+                  </ParamsList>
+                </CallFunOp>
+              </CallFunOp>
+              <CallFunOp>
+                <CallFunOp>
+                  <LeafID value="recursive_fib"/>
+                  <ParamsList>
+                    <DiffOp>
+                      <ID>
+                        <LeafID value="n"/>
+                      </ID>
+                      <INTEGER_CONST>
+                        <LeafIntegerConst value="2"/>
+                      </INTEGER_CONST>
+                    </DiffOp>
+                  </ParamsList>
+                </CallFunOp>
+              </CallFunOp>
+            </AddOp>
+          </ReturnOp>
+        </StatList>
+      </BodyOp>
+    </FunOp>
+    <FunOp>
+      <LeafID value="iterative_fib"/>
+      <ParamsList>
+        <ParDeclOp>
+          <ModeOp>
+            <in/>
+          </ModeOp>
+          <IntOp type="INTEGER"/>
+          <LeafID value="n"/>
+        </ParDeclOp>
+      </ParamsList>
+      <ReturnFunType>
+        <IntOp type="INTEGER"/>
+      </ReturnFunType>
+      <BodyOp>
+        <VarDeclList/>
+        <StatList>
+          <IfOp>
+            <ConditionIf>
+              <EQOp>
+                <ID>
+                  <LeafID value="n"/>
+                </ID>
+                <INTEGER_CONST>
+                  <LeafIntegerConst value="1"/>
+                </INTEGER_CONST>
+              </EQOp>
+            </ConditionIf>
+            <BodyOp>
+              <VarDeclList/>
+              <StatList>
+                <ReturnOp>
+                  <INTEGER_CONST>
+                    <LeafIntegerConst value="0"/>
+                  </INTEGER_CONST>
+                </ReturnOp>
+              </StatList>
+            </BodyOp>
+          </IfOp>
+          <IfOp>
+            <ConditionIf>
+              <EQOp>
+                <ID>
+                  <LeafID value="n"/>
+                </ID>
+                <INTEGER_CONST>
+                  <LeafIntegerConst value="2"/>
+                </INTEGER_CONST>
+              </EQOp>
+            </ConditionIf>
+            <BodyOp>
+              <VarDeclList/>
+              <StatList>
+                <ReturnOp>
+                  <INTEGER_CONST>
+                    <LeafIntegerConst value="1"/>
+                  </INTEGER_CONST>
+                </ReturnOp>
+              </StatList>
+            </BodyOp>
+          </IfOp>
+          <IfOp>
+            <ConditionIf>
+              <GTOp>
+                <ID>
+                  <LeafID value="n"/>
+                </ID>
+                <INTEGER_CONST>
+                  <LeafIntegerConst value="2"/>
+                </INTEGER_CONST>
+              </GTOp>
+            </ConditionIf>
+            <BodyOp>
+              <VarDeclList>
+                <VarDeclOp>
+                  <IntOp type="INTEGER"/>
+                  <IdInitOp>
+                    <LeafID value="i"/>
+                    <INTEGER_CONST>
+                      <LeafIntegerConst value="3"/>
+                    </INTEGER_CONST>
+                  </IdInitOp>
+                  <IdInitOp>
+                    <LeafID value="res"/>
+                    <INTEGER_CONST>
+                      <LeafIntegerConst value="1"/>
+                    </INTEGER_CONST>
+                  </IdInitOp>
+                  <IdInitOp>
+                    <LeafID value="prev"/>
+                    <INTEGER_CONST>
+                      <LeafIntegerConst value="0"/>
+                    </INTEGER_CONST>
+                  </IdInitOp>
+                </VarDeclOp>
+              </VarDeclList>
+              <StatList>
+                <WhileOp>
+                  <ConditionWhile>
+                    <LEOp>
+                      <ID>
+                        <LeafID value="i"/>
+                      </ID>
+                      <ID>
+                        <LeafID value="n"/>
+                      </ID>
+                    </LEOp>
+                  </ConditionWhile>
+                  <BodyOp>
+                    <VarDeclList>
+                      <VarDeclOp>
+                        <IntOp type="INTEGER"/>
+                        <IdInitOp>
+                          <LeafID value="tmp"/>
+                          <ID>
+                            <LeafID value="res"/>
+                          </ID>
+                        </IdInitOp>
+                      </VarDeclOp>
+                    </VarDeclList>
+                    <StatList>
+                      <AssignOp>
+                        <LeafID value="res"/>
+                        <AddOp>
+                          <ID>
+                            <LeafID value="res"/>
+                          </ID>
+                          <ID>
+                            <LeafID value="prev"/>
+                          </ID>
+                        </AddOp>
+                      </AssignOp>
+                      <AssignOp>
+                        <LeafID value="prev"/>
+                        <ID>
+                          <LeafID value="tmp"/>
+                        </ID>
+                      </AssignOp>
+                      <AssignOp>
+                        <LeafID value="i"/>
+                        <AddOp>
+                          <ID>
+                            <LeafID value="i"/>
+                          </ID>
+                          <INTEGER_CONST>
+                            <LeafIntegerConst value="1"/>
+                          </INTEGER_CONST>
+                        </AddOp>
+                      </AssignOp>
+                    </StatList>
+                  </BodyOp>
+                </WhileOp>
+                <ReturnOp>
+                  <ID>
+                    <LeafID value="res"/>
+                  </ID>
+                </ReturnOp>
+              </StatList>
+            </BodyOp>
+          </IfOp>
+          <ReturnOp>
+            <UminusOp>
+              <INTEGER_CONST>
+                <LeafIntegerConst value="1"/>
+              </INTEGER_CONST>
+            </UminusOp>
+          </ReturnOp>
+        </StatList>
+      </BodyOp>
+    </FunOp>
+    <FunOp>
+      <LeafID value="do_fib"/>
+      <ParamsList>
+        <ParDeclOp>
+          <ModeOp>
+            <in/>
+          </ModeOp>
+          <BoolOp type="BOOL"/>
+          <LeafID value="recursive"/>
+        </ParDeclOp>
+      </ParamsList>
+      <BodyOp>
+        <VarDeclList>
+          <VarDeclOp>
+            <IntOp type="INTEGER"/>
+            <IdInitOp>
+              <LeafID value="n"/>
+            </IdInitOp>
+          </VarDeclOp>
+          <VarDeclOp>
+            <StringOp type="STRING"/>
+            <IdInitOp>
+              <LeafID value="message"/>
+            </IdInitOp>
+          </VarDeclOp>
+        </VarDeclList>
+        <StatList>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value="\n(5) FIBONACCI"/>
+            </STRING_CONST>
+          </WriteOp>
+          <ReadOp>
+            <idList>
+              <LeafID value="n"/>
+            </idList>
+            <STRING_CONST>
+              <LeafStringConst value="\nInserisci n: "/>
+            </STRING_CONST>
+          </ReadOp>
+          <WriteOp>
+            <writeln/>
+            <STRING_CONST>
+              <LeafStringConst value=""/>
+            </STRING_CONST>
+          </WriteOp>
+          <AssignOp>
+            <LeafID value="message"/>
+            <StrCatOp>
+              <StrCatOp>
+                <STRING_CONST>
+                  <LeafStringConst value="Il numero di Fibonacci in posizione "/>
+                </STRING_CONST>
+                <ID>
+                  <LeafID value="n"/>
+                </ID>
+              </StrCatOp>
+              <STRING_CONST>
+                <LeafStringConst value=" vale "/>
+              </STRING_CONST>
+            </StrCatOp>
+          </AssignOp>
+          <IfOp>
+            <ConditionIf>
+              <ID>
+                <LeafID value="recursive"/>
+              </ID>
+            </ConditionIf>
+            <BodyOp>
+              <VarDeclList/>
+              <StatList>
+                <AssignOp>
+                  <LeafID value="message"/>
+                  <StrCatOp>
+                    <ID>
+                      <LeafID value="message"/>
+                    </ID>
+                    <CallFunOp>
+                      <CallFunOp>
+                        <LeafID value="recursive_fib"/>
+                        <ParamsList>
+                          <ID>
+                            <LeafID value="n"/>
+                          </ID>
+                        </ParamsList>
+                      </CallFunOp>
+                    </CallFunOp>
+                  </StrCatOp>
+                </AssignOp>
+              </StatList>
+            </BodyOp>
+            <ElseBody>
+              <BodyOp>
+                <VarDeclList/>
+                <StatList>
+                  <AssignOp>
+                    <LeafID value="message"/>
+                    <StrCatOp>
+                      <ID>
+                        <LeafID value="message"/>
+                      </ID>
+                      <CallFunOp>
+                        <CallFunOp>
+                          <LeafID value="iterative_fib"/>
+                          <ParamsList>
+                            <ID>
+                              <LeafID value="n"/>
+                            </ID>
+                          </ParamsList>
+                        </CallFunOp>
+                      </CallFunOp>
+                    </StrCatOp>
+                  </AssignOp>
+                </StatList>
+              </BodyOp>
+            </ElseBody>
+          </IfOp>
+          <WriteOp>
+            <writeln/>
+            <ID>
+              <LeafID value="message"/>
+            </ID>
+          </WriteOp>
+        </StatList>
+      </BodyOp>
+    </FunOp>
+    <FunOp>
+      <LeafID value="do_operation"/>
+      <ParamsList>
+        <ParDeclOp>
+          <ModeOp>
+            <in/>
+          </ModeOp>
+          <IntOp type="INTEGER"/>
+          <LeafID value="choose"/>
+        </ParDeclOp>
+      </ParamsList>
+      <BodyOp>
+        <VarDeclList/>
+        <StatList>
+          <IfOp>
+            <ConditionIf>
+              <EQOp>
+                <ID>
+                  <LeafID value="choose"/>
+                </ID>
+                <INTEGER_CONST>
+                  <LeafIntegerConst value="1"/>
+                </INTEGER_CONST>
+              </EQOp>
+            </ConditionIf>
+            <BodyOp>
+              <VarDeclList/>
+              <StatList>
+                <CallFunOp>
+                  <LeafID value="do_sum"/>
+                </CallFunOp>
+              </StatList>
+            </BodyOp>
+            <ElseBody>
+              <BodyOp>
+                <VarDeclList/>
+                <StatList>
+                  <IfOp>
+                    <ConditionIf>
+                      <EQOp>
+                        <ID>
+                          <LeafID value="choose"/>
+                        </ID>
+                        <INTEGER_CONST>
+                          <LeafIntegerConst value="2"/>
+                        </INTEGER_CONST>
+                      </EQOp>
+                    </ConditionIf>
+                    <BodyOp>
+                      <VarDeclList/>
+                      <StatList>
+                        <CallFunOp>
+                          <LeafID value="do_mul"/>
+                        </CallFunOp>
+                      </StatList>
+                    </BodyOp>
+                    <ElseBody>
+                      <BodyOp>
+                        <VarDeclList/>
+                        <StatList>
+                          <IfOp>
+                            <ConditionIf>
+                              <EQOp>
+                                <ID>
+                                  <LeafID value="choose"/>
+                                </ID>
+                                <INTEGER_CONST>
+                                  <LeafIntegerConst value="3"/>
+                                </INTEGER_CONST>
+                              </EQOp>
+                            </ConditionIf>
+                            <BodyOp>
+                              <VarDeclList/>
+                              <StatList>
+                                <CallFunOp>
+                                  <LeafID value="do_div_int"/>
+                                </CallFunOp>
+                              </StatList>
+                            </BodyOp>
+                            <ElseBody>
+                              <BodyOp>
+                                <VarDeclList/>
+                                <StatList>
+                                  <IfOp>
+                                    <ConditionIf>
+                                      <EQOp>
+                                        <ID>
+                                          <LeafID value="choose"/>
+                                        </ID>
+                                        <INTEGER_CONST>
+                                          <LeafIntegerConst value="4"/>
+                                        </INTEGER_CONST>
+                                      </EQOp>
+                                    </ConditionIf>
+                                    <BodyOp>
+                                      <VarDeclList/>
+                                      <StatList>
+                                        <CallFunOp>
+                                          <LeafID value="do_pow"/>
+                                        </CallFunOp>
+                                      </StatList>
+                                    </BodyOp>
+                                    <ElseBody>
+                                      <BodyOp>
+                                        <VarDeclList/>
+                                        <StatList>
+                                          <IfOp>
+                                            <ConditionIf>
+                                              <EQOp>
+                                                <ID>
+                                                  <LeafID value="choose"/>
+                                                </ID>
+                                                <INTEGER_CONST>
+                                                  <LeafIntegerConst value="5"/>
+                                                </INTEGER_CONST>
+                                              </EQOp>
+                                            </ConditionIf>
+                                            <BodyOp>
+                                              <VarDeclList/>
+                                              <StatList>
+                                                <CallFunOp>
+                                                  <LeafID value="do_fib"/>
+                                                  <ParamsList>
+                                                    <BOOL_CONST>
+                                                      <LeafBool value="true"/>
+                                                    </BOOL_CONST>
+                                                  </ParamsList>
+                                                </CallFunOp>
+                                              </StatList>
+                                            </BodyOp>
+                                            <ElseBody>
+                                              <BodyOp>
+                                                <VarDeclList/>
+                                                <StatList>
+                                                  <IfOp>
+                                                    <ConditionIf>
+                                                      <EQOp>
+                                                        <ID>
+                                                          <LeafID value="choose"/>
+                                                        </ID>
+                                                        <INTEGER_CONST>
+                                                          <LeafIntegerConst value="6"/>
+                                                        </INTEGER_CONST>
+                                                      </EQOp>
+                                                    </ConditionIf>
+                                                    <BodyOp>
+                                                      <VarDeclList/>
+                                                      <StatList>
+                                                        <CallFunOp>
+                                                          <LeafID value="do_fib"/>
+                                                          <ParamsList>
+                                                            <BOOL_CONST>
+                                                              <LeafBool value="false"/>
+                                                            </BOOL_CONST>
+                                                          </ParamsList>
+                                                        </CallFunOp>
+                                                      </StatList>
+                                                    </BodyOp>
+                                                  </IfOp>
+                                                </StatList>
+                                              </BodyOp>
+                                            </ElseBody>
+                                          </IfOp>
+                                        </StatList>
+                                      </BodyOp>
+                                    </ElseBody>
+                                  </IfOp>
+                                </StatList>
+                              </BodyOp>
+                            </ElseBody>
+                          </IfOp>
+                        </StatList>
+                      </BodyOp>
+                    </ElseBody>
+                  </IfOp>
+                </StatList>
+              </BodyOp>
+            </ElseBody>
+          </IfOp>
+        </StatList>
+      </BodyOp>
+    </FunOp>
+    <FunOp>
+      <LeafID value="print_continue"/>
+      <ParamsList>
+        <ParDeclOp>
+          <ModeOp>
+            <out/>
+          </ModeOp>
+          <BoolOp type="BOOL"/>
+          <LeafID value="flagContinue"/>
+        </ParDeclOp>
+      </ParamsList>
+      <BodyOp>
+        <VarDeclList>
+          <VarDeclOp>
+            <StringOp type="STRING"/>
+            <IdInitOp>
+              <LeafID value="in"/>
+            </IdInitOp>
+          </VarDeclOp>
+        </VarDeclList>
+        <StatList>
+          <ReadOp>
+            <idList>
+              <LeafID value="in"/>
+            </idList>
+            <STRING_CONST>
+              <LeafStringConst value="Vuoi continuare? (s/n) --&gt; "/>
+            </STRING_CONST>
+          </ReadOp>
+          <IfOp>
+            <ConditionIf>
+              <EQOp>
+                <ID>
+                  <LeafID value="in"/>
+                </ID>
+                <STRING_CONST>
+                  <LeafStringConst value="s"/>
+                </STRING_CONST>
+              </EQOp>
+            </ConditionIf>
+            <BodyOp>
+              <VarDeclList/>
+              <StatList>
+                <AssignOp>
+                  <LeafID value="flagContinue"/>
+                  <BOOL_CONST>
+                    <LeafBool value="true"/>
+                  </BOOL_CONST>
+                </AssignOp>
+              </StatList>
+            </BodyOp>
+            <ElseBody>
+              <BodyOp>
+                <VarDeclList/>
+                <StatList>
+                  <AssignOp>
+                    <LeafID value="flagContinue"/>
+                    <BOOL_CONST>
+                      <LeafBool value="false"/>
+                    </BOOL_CONST>
+                  </AssignOp>
+                </StatList>
+              </BodyOp>
+            </ElseBody>
+          </IfOp>
+        </StatList>
+      </BodyOp>
+    </FunOp>
+  </FunList>
+  <BodyOp>
+    <VarDeclList>
+      <VarDeclOp>
+        <VarOp type="VAR"/>
+        <IdInitOpObbl>
+          <LeafID value="choose"/>
+          <INTEGER_CONST>
+            <LeafIntegerConst value="0"/>
+          </INTEGER_CONST>
+        </IdInitOpObbl>
+        <IdInitOpObbl>
+          <LeafID value="flagContinue"/>
+          <BOOL_CONST>
+            <LeafBool value="true"/>
+          </BOOL_CONST>
+        </IdInitOpObbl>
+      </VarDeclOp>
+    </VarDeclList>
+    <StatList>
+      <WhileOp>
+        <ConditionWhile>
+          <ID>
+            <LeafID value="flagContinue"/>
+          </ID>
+        </ConditionWhile>
+        <BodyOp>
+          <VarDeclList/>
+          <StatList>
+            <AssignOp>
+              <LeafID value="choose"/>
+              <CallFunOp>
+                <CallFunOp>
+                  <LeafID value="print_menu"/>
+                </CallFunOp>
+              </CallFunOp>
+            </AssignOp>
+            <IfOp>
+              <ConditionIf>
+                <EQOp>
+                  <ID>
+                    <LeafID value="choose"/>
+                  </ID>
+                  <INTEGER_CONST>
+                    <LeafIntegerConst value="0"/>
+                  </INTEGER_CONST>
+                </EQOp>
+              </ConditionIf>
+              <BodyOp>
+                <VarDeclList/>
+                <StatList>
+                  <AssignOp>
+                    <LeafID value="flagContinue"/>
+                    <BOOL_CONST>
+                      <LeafBool value="false"/>
+                    </BOOL_CONST>
+                  </AssignOp>
+                </StatList>
+              </BodyOp>
+              <ElseBody>
+                <BodyOp>
+                  <VarDeclList/>
+                  <StatList>
+                    <CallFunOp>
+                      <LeafID value="do_operation"/>
+                      <ParamsList>
+                        <ID>
+                          <LeafID value="choose"/>
+                        </ID>
+                      </ParamsList>
+                    </CallFunOp>
+                    <CallFunOp>
+                      <LeafID value="print_continue"/>
+                      <ParamsList>
+                        <OutPar>
+                          <OutPar/>
+                          <LeafID value="flagContinue"/>
+                        </OutPar>
+                      </ParamsList>
+                    </CallFunOp>
+                  </StatList>
+                </BodyOp>
+              </ElseBody>
+            </IfOp>
+          </StatList>
+        </BodyOp>
+      </WhileOp>
+    </StatList>
+  </BodyOp>
+</ProgramOp>

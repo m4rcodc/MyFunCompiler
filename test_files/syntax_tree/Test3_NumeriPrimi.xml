@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ProgramOp>
+  <VarDeclList/>
+  <FunList>
+    <FunOp>
+      <LeafID value="isPrimo"/>
+      <ParamsList>
+        <ParDeclOp>
+          <ModeOp>
+            <in/>
+          </ModeOp>
+          <IntOp type="INTEGER"/>
+          <LeafID value="num"/>
+        </ParDeclOp>
+        <ParDeclOp>
+          <ModeOp>
+            <in/>
+          </ModeOp>
+          <IntOp type="INTEGER"/>
+          <LeafID value="div_cor"/>
+        </ParDeclOp>
+      </ParamsList>
+      <ReturnFunType>
+        <BoolOp type="BOOL"/>
+      </ReturnFunType>
+      <BodyOp>
+        <VarDeclList/>
+        <StatList>
+          <IfOp>
+            <ConditionIf>
+              <LTOp>
+                <ID>
+                  <LeafID value="div_cor"/>
+                </ID>
+                <ID>
+                  <LeafID value="num"/>
+                </ID>
+              </LTOp>
+            </ConditionIf>
+            <BodyOp>
+              <VarDeclList>
+                <VarDeclOp>
+                  <IntOp type="INTEGER"/>
+                  <IdInitOp>
+                    <LeafID value="divisione"/>
+                    <DivIntOp>
+                      <ID>
+                        <LeafID value="num"/>
+                      </ID>
+                      <ID>
+                        <LeafID value="div_cor"/>
+                      </ID>
+                    </DivIntOp>
+                  </IdInitOp>
+                </VarDeclOp>
+                <VarDeclOp>
+                  <IntOp type="INTEGER"/>
+                  <IdInitOp>
+                    <LeafID value="rest"/>
+                    <DiffOp>
+                      <ID>
+                        <LeafID value="num"/>
+                      </ID>
+                      <MulOp>
+                        <ID>
+                          <LeafID value="divisione"/>
+                        </ID>
+                        <ID>
+                          <LeafID value="div_cor"/>
+                        </ID>
+                      </MulOp>
+                    </DiffOp>
+                  </IdInitOp>
+                </VarDeclOp>
+              </VarDeclList>
+              <StatList>
+                <IfOp>
+                  <ConditionIf>
+                    <NEOp>
+                      <ID>
+                        <LeafID value="rest"/>
+                      </ID>
+                      <INTEGER_CONST>
+                        <LeafIntegerConst value="0"/>
+                      </INTEGER_CONST>
+                    </NEOp>
+                  </ConditionIf>
+                  <BodyOp>
+                    <VarDeclList/>
+                    <StatList>
+                      <ReturnOp>
+                        <CallFunOp>
+                          <CallFunOp>
+                            <LeafID value="isPrimo"/>
+                            <ParamsList>
+                              <ID>
+                                <LeafID value="num"/>
+                              </ID>
+                              <AddOp>
+                                <ID>
+                                  <LeafID value="div_cor"/>
+                                </ID>
+                                <INTEGER_CONST>
+                                  <LeafIntegerConst value="1"/>
+                                </INTEGER_CONST>
+                              </AddOp>
+                            </ParamsList>
+                          </CallFunOp>
+                        </CallFunOp>
+                      </ReturnOp>
+                    </StatList>
+                  </BodyOp>
+                  <ElseBody>
+                    <BodyOp>
+                      <VarDeclList/>
+                      <StatList>
+                        <ReturnOp>
+                          <BOOL_CONST>
+                            <LeafBool value="false"/>
+                          </BOOL_CONST>
+                        </ReturnOp>
+                      </StatList>
+                    </BodyOp>
+                  </ElseBody>
+                </IfOp>
+              </StatList>
+            </BodyOp>
+            <ElseBody>
+              <BodyOp>
+                <VarDeclList/>
+                <StatList>
+                  <ReturnOp>
+                    <BOOL_CONST>
+                      <LeafBool value="true"/>
+                    </BOOL_CONST>
+                  </ReturnOp>
+                </StatList>
+              </BodyOp>
+            </ElseBody>
+          </IfOp>
+        </StatList>
+      </BodyOp>
+    </FunOp>
+  </FunList>
+  <BodyOp>
+    <VarDeclList>
+      <VarDeclOp>
+        <IntOp type="INTEGER"/>
+        <IdInitOp>
+          <LeafID value="num"/>
+        </IdInitOp>
+      </VarDeclOp>
+      <VarDeclOp>
+        <StringOp type="STRING"/>
+        <IdInitOp>
+          <LeafID value="nome_programma"/>
+          <STRING_CONST>
+            <LeafStringConst value="\'Calcolo numeri primi\'"/>
+          </STRING_CONST>
+        </IdInitOp>
+      </VarDeclOp>
+    </VarDeclList>
+    <StatList>
+      <WriteOp>
+        <writeln/>
+        <StrCatOp>
+          <STRING_CONST>
+            <LeafStringConst value="Benvenuto in "/>
+          </STRING_CONST>
+          <ID>
+            <LeafID value="nome_programma"/>
+          </ID>
+        </StrCatOp>
+      </WriteOp>
+      <ReadOp>
+        <idList>
+          <LeafID value="num"/>
+        </idList>
+        <STRING_CONST>
+          <LeafStringConst value="Inserire un numero positivo: "/>
+        </STRING_CONST>
+      </ReadOp>
+      <WhileOp>
+        <ConditionWhile>
+          <LTOp>
+            <ID>
+              <LeafID value="num"/>
+            </ID>
+            <INTEGER_CONST>
+              <LeafIntegerConst value="0"/>
+            </INTEGER_CONST>
+          </LTOp>
+        </ConditionWhile>
+        <BodyOp>
+          <VarDeclList/>
+          <StatList>
+            <WriteOp>
+              <writeln/>
+              <StrCatOp>
+                <StrCatOp>
+                  <STRING_CONST>
+                    <LeafStringConst value="Il numero "/>
+                  </STRING_CONST>
+                  <ID>
+                    <LeafID value="num"/>
+                  </ID>
+                </StrCatOp>
+                <STRING_CONST>
+                  <LeafStringConst value=" non e\' positivo, riprova"/>
+                </STRING_CONST>
+              </StrCatOp>
+            </WriteOp>
+            <ReadOp>
+              <idList>
+                <LeafID value="num"/>
+              </idList>
+              <STRING_CONST>
+                <LeafStringConst value="Inserire numero: "/>
+              </STRING_CONST>
+            </ReadOp>
+          </StatList>
+        </BodyOp>
+      </WhileOp>
+      <IfOp>
+        <ConditionIf>
+          <GTOp>
+            <ID>
+              <LeafID value="num"/>
+            </ID>
+            <INTEGER_CONST>
+              <LeafIntegerConst value="1"/>
+            </INTEGER_CONST>
+          </GTOp>
+        </ConditionIf>
+        <BodyOp>
+          <VarDeclList/>
+          <StatList>
+            <IfOp>
+              <ConditionIf>
+                <CallFunOp>
+                  <CallFunOp>
+                    <LeafID value="isPrimo"/>
+                    <ParamsList>
+                      <ID>
+                        <LeafID value="num"/>
+                      </ID>
+                      <INTEGER_CONST>
+                        <LeafIntegerConst value="2"/>
+                      </INTEGER_CONST>
+                    </ParamsList>
+                  </CallFunOp>
+                </CallFunOp>
+              </ConditionIf>
+              <BodyOp>
+                <VarDeclList/>
+                <StatList>
+                  <WriteOp>
+                    <write/>
+                    <ID>
+                      <LeafID value="num"/>
+                    </ID>
+                  </WriteOp>
+                  <WriteOp>
+                    <writeln/>
+                    <STRING_CONST>
+                      <LeafStringConst value=" e\' primo"/>
+                    </STRING_CONST>
+                  </WriteOp>
+                </StatList>
+              </BodyOp>
+              <ElseBody>
+                <BodyOp>
+                  <VarDeclList/>
+                  <StatList>
+                    <WriteOp>
+                      <write/>
+                      <ID>
+                        <LeafID value="num"/>
+                      </ID>
+                    </WriteOp>
+                    <WriteOp>
+                      <writeln/>
+                      <STRING_CONST>
+                        <LeafStringConst value=" non e\' primo"/>
+                      </STRING_CONST>
+                    </WriteOp>
+                  </StatList>
+                </BodyOp>
+              </ElseBody>
+            </IfOp>
+          </StatList>
+        </BodyOp>
+      </IfOp>
+    </StatList>
+  </BodyOp>
+</ProgramOp>
