@@ -448,7 +448,7 @@ Tabella per optype2(op, type1, type2) (Operatori Binari)
 
 <img src="https://latex.codecogs.com/png.image?\dpi{110}&space;\bg_white&space;\frac{\Gamma&space;\&space;\vdash&space;e&space;:&space;\tau&space;\&space;\&space;\&space;\Gamma&space;\&space;\vdash&space;f&space;\&space;\rightarrow&space;\tau}{\Gamma&space;\&space;\vdash&space;\&space;\mathbf{return}&space;\&space;e&space;\&space;:&space;\&space;notype}"/><br>
 
-## Generazione del Codice Intermedio
+##Generazione del Codice Intermedio
 
 Per la generazione del codice è stato utilizzato il pattern **VISITOR** implementato nel file **CVisitor.java**: per la generazione del codice intermedio (C).
 
