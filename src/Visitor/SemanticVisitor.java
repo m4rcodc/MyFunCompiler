@@ -594,7 +594,7 @@ public class SemanticVisitor implements ISemanticVisitor {
                     System.err.println("Semantic error: type not compatible with operation (" + exprNode.name + "). First type: " + ((ExprNode) exprNode.value1).type + ", second type: " + ((ExprNode) exprNode.value2).type);
                     System.exit(1);
                 } else {
-                    exprNode.setType(takenType);//Altrimenti setto il tipo di exprNode col tipo risultante dell'operazione
+                    exprNode.setType(takenType);//Altrimenti setto il tipo di exprNode col tipo risultante dell'operazione (Assegno il tipo risultante ad expr, cioè all'espressione)
                  }
                 }
             //DIVINT
@@ -631,7 +631,20 @@ public class SemanticVisitor implements ISemanticVisitor {
                     exprNode.setType(takenType);
                 }
             }
-            //Controllo su operatori relazionali: LT,GT,LE...
+            //Controllo sugli operatori EQ ed NE
+            else if(exprNode.name.equalsIgnoreCase("EQOp") || exprNode.name.equalsIgnoreCase("NEOp")){
+                ValueType takenType = getType_EQ_NE(((ExprNode) exprNode.value1).type,
+                        ((ExprNode) exprNode.value2).type);
+                if(takenType == null){
+                    System.err.println("Semantic error: type not compatible with operation (" + exprNode.name + "). First type: " + ((ExprNode) exprNode.value1).type + ", second type: " + ((ExprNode) exprNode.value2).type);
+                    System.exit(1);
+                }
+                else {
+                    exprNode.setType(takenType);
+                }
+
+            }
+            //Controllo su operatori relazionali: LT,GT,LE... (<, <=, >, >=)
             else {
                 // Se takenType == null -> Errore per tipi non compatibili
                 ValueType takenType = getType_Boolean(((ExprNode) exprNode.value1).type,
@@ -639,8 +652,9 @@ public class SemanticVisitor implements ISemanticVisitor {
                 if(takenType == null){
                     System.err.println("Semantic error: type not compatible with logical operation (" + exprNode.name + "). First type: " + ((ExprNode) exprNode.value1).type + ", second type: " + ((ExprNode) exprNode.value2).type);
                     System.exit(1);
-                } else
+                } else {
                     exprNode.setType(takenType);
+                }
             }
         }
         else if(exprNode.value1 != null && exprNode.value2 == null){
@@ -742,8 +756,8 @@ public class SemanticVisitor implements ISemanticVisitor {
         leaf.setType("real");
     }
 
-    //verifica se la variabile a cui si assegna un valore ed il valore assegnato hanno lo stesso tipo,
-    //utilizzato anche per verificare la corrispondenza dei tipi dei parametri in CallFunNode
+    //Verifica se la variabile a cui si assegna un valore ed il valore assegnato hanno lo stesso tipo,
+    //Utilizzato anche per verificare la corrispondenza dei tipi dei parametri in CallFunNode
     public static boolean checkAssignmentType(ValueType variable, ValueType assigned) {
         if (variable == ValueType.Integer && assigned == ValueType.Integer)
             return true;
@@ -799,17 +813,31 @@ public class SemanticVisitor implements ISemanticVisitor {
             return ValueType.Bool;
         if(type1 == ValueType.Real && type2 == ValueType.Real)
             return ValueType.Bool;
-        if(type1 == ValueType.String && type2 == ValueType.String)
-            return ValueType.Bool;
-        if(type1 == ValueType.Bool && type2 == ValueType.Bool){
-            return ValueType.Bool;
-        }
         else
             return null;
     }
 
+    //Semantic check per gli operatori binarI: EQ,NE
+    public static ValueType getType_EQ_NE(ValueType type1, ValueType type2){
+        if(type1 == ValueType.Integer && type2 == ValueType.Integer)
+            return ValueType.Bool;
+        if(type1 == ValueType.Real && type2 == ValueType.Real)
+            return ValueType.Bool;
+        if(type1 == ValueType.Integer && type2 == ValueType.Real)
+            return ValueType.Bool;
+        if(type1 == ValueType.Real && type2 == ValueType.Integer)
+            return ValueType.Bool;
+        if(type1 == ValueType.String && type2 == ValueType.String)
+            return ValueType.Bool;
+        if(type1 == ValueType.Bool && type2 == ValueType.Bool)
+            return ValueType.Bool;
+        else
+            return null;
 
-    //Semantic check per string concat &
+    }
+
+
+    //Semantic check per string concat (&)
     public static ValueType getType_StrConcat(ValueType type1, ValueType type2){
         if(type1 == ValueType.String && type2 == ValueType.String){
             return ValueType.String;

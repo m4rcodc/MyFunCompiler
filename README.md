@@ -388,7 +388,7 @@ Tabella per optype1(op, t) (Operatori Unari)
 
 <img src="https://latex.codecogs.com/png.image?\bg_white&space;\frac{\Gamma&space;\&space;\vdash&space;\&space;e&space;\&space;:&space;\&space;\tau_1&space;\&space;\&space;\&space;\Gamma&space;\&space;\vdash&space;\&space;e_2&space;\&space;:&space;\&space;\tau_2&space;\&space;\&space;\&space;optype2(op_2,&space;\tau_1,&space;\tau_2)&space;\&space;=&space;\&space;\tau}{\Gamma&space;\&space;\vdash&space;\&space;e_1&space;\&space;op_2&space;\&space;e_2&space;\&space;:&space;\&space;\tau}"/><br>
 
-Tabella per optype2(op, t_1, t_2) (Operatori Binari)
+Tabella per optype2(op, type1, type2) (Operatori Binari)
 
 | op1                     | operando | operando2 | risultato |
 | ----------------------- | -------- | --------- | --------- |
@@ -397,7 +397,6 @@ Tabella per optype2(op, t_1, t_2) (Operatori Binari)
 | PLUS, MINUS, TIMES, DIV | real     | integer   | real      |
 | PLUS, MINUS, TIMES, DIV | real     | real      | real      |
 | DIVINT                  | integer  | integer   | integer   |
-| DIVINT                  | real     | integer   | integer   |
 | STR_CONCAT              | string   | string    | string    |
 | STR_CONCAT              | string   | integer   | string    |
 | STR_CONCAT              | string   | real      | string    |
@@ -461,9 +460,3 @@ Per la generazione del codice è stato utilizzato il pattern **VISITOR** impleme
     * ``` char *BoolConcat(char *string, int toConcat) ```
     * ``` char *StringConcat(char *string, char *toConcat) ```
 
-## Bug Noti e Scelte Progettuali Fatte
-
-Nell'implementazione del progetto, con lo scopo di rendere il codice più pulito e mantenibile possibile si è scelto di non supportare alcuni casi estremamente particolari e di difficile riproduzione.
-
-Casi particolari non supportati noti:
-* Gestione di concatenazioni di stringha al seguito della dichiarazione di una variabile globale (Sia tramite IdInitNode che IdInitObblNode).

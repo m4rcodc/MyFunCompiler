@@ -44,8 +44,6 @@ return concat;
 
 int main () {
 
-char* a = malloc(sizeof(char) * MAXCHAR);
-strcpy(a, "ciao");
 return 0;
 
 }

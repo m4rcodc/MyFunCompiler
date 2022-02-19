@@ -1,4 +1,7 @@
 main
 
-string a := "ciao";
+
+
+
+
 end main;
