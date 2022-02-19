@@ -1,7 +1,10 @@
+var a := "ciao";
+
 main
 
-
-
-
+integer a := 2;
+var b := 3;
+integer c := 6;
+integer d := a + (b * c);
 
 end main;

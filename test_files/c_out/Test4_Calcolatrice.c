@@ -45,6 +45,7 @@ return concat;
 //Dichiarazione variabili globali
 bool lp = true;
 
+
 //Fun menu
 void menu() {
 printf("%s\n", "Benvenuto in questo programma, quale operazione vuoi svolgere ?");

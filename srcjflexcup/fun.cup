@@ -158,6 +158,6 @@ Expr ::= BOOL_CONST:val {: RESULT = new ExprNode("BOOL_CONST", new LeafBool(val)
 	| Expr:e1  NE Expr:e2 {: RESULT = new ExprNode("NEOp",(ExprNode) e1,(ExprNode) e2); :}
 	| MINUS Expr:e1 {: RESULT = new ExprNode("UminusOp",(ExprNode) e1); :} %prec _uminus
 	| NOT Expr:e1 {: RESULT = new ExprNode("NotOp",(ExprNode) e1); :}
-	| LPAR Expr:e1 RPAR {: RESULT = new ExprNode("ExprOp",(ExprNode) e1); :}
+	| LPAR Expr:e1 RPAR {: RESULT = e1; :}
 ;
 

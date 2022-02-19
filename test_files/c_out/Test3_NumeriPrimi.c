@@ -43,6 +43,7 @@ return concat;
 }
 
 
+
 //Fun isPrimo
 bool isPrimo(int num, int div_cor) {
 if (div_cor < num) {

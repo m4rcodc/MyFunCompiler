@@ -16,6 +16,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 
+//Visitor per la generazione dell'albero sintattico (Formato XML)
+
 public class SyntaxVisitor implements ISyntaxVisitor{
 
         DocumentBuilderFactory dbFactory;

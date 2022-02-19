@@ -42,8 +42,16 @@ strcat(concat, toConcat);
 return concat;
 }
 
+//Dichiarazione variabili globali
+char* a = malloc(sizeof(char) * MAXCHAR);
+strcpy(a, "ciao");
+
 int main () {
 
+int a = 2;
+int b = 3;
+int c = 6;
+int d = a + b * c;
 return 0;
 
 }

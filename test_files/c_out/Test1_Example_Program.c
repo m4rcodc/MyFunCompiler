@@ -46,6 +46,7 @@ return concat;
 int c = 1;
 int d = 2;
 
+
 //Fun sommac
 double sommac(int a, double b, char* *size) {
 double result;

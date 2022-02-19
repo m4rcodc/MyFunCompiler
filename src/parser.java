@@ -1640,7 +1640,7 @@ RESULT = new IfStatNode("IfOp", (ExprNode) expr, bn , (BodyNode) elseb);}
 		int e1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int e1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Object e1 = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		 RESULT = new ExprNode("ExprOp",(ExprNode) e1); 
+		 RESULT = e1; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",10, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

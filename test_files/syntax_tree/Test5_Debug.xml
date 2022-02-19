@@ -1,9 +1,66 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <ProgramOp>
-  <VarDeclList/>
+  <VarDeclList>
+    <VarDeclOp>
+      <VarOp type="VAR"/>
+      <IdInitOpObbl>
+        <LeafID value="a"/>
+        <STRING_CONST>
+          <LeafStringConst value="ciao"/>
+        </STRING_CONST>
+      </IdInitOpObbl>
+    </VarDeclOp>
+  </VarDeclList>
   <FunList/>
   <BodyOp>
-    <VarDeclList/>
+    <VarDeclList>
+      <VarDeclOp>
+        <IntOp type="INTEGER"/>
+        <IdInitOp>
+          <LeafID value="a"/>
+          <INTEGER_CONST>
+            <LeafIntegerConst value="2"/>
+          </INTEGER_CONST>
+        </IdInitOp>
+      </VarDeclOp>
+      <VarDeclOp>
+        <VarOp type="VAR"/>
+        <IdInitOpObbl>
+          <LeafID value="b"/>
+          <INTEGER_CONST>
+            <LeafIntegerConst value="3"/>
+          </INTEGER_CONST>
+        </IdInitOpObbl>
+      </VarDeclOp>
+      <VarDeclOp>
+        <IntOp type="INTEGER"/>
+        <IdInitOp>
+          <LeafID value="c"/>
+          <INTEGER_CONST>
+            <LeafIntegerConst value="6"/>
+          </INTEGER_CONST>
+        </IdInitOp>
+      </VarDeclOp>
+      <VarDeclOp>
+        <IntOp type="INTEGER"/>
+        <IdInitOp>
+          <LeafID value="d"/>
+          <AddOp>
+            <ID>
+              <LeafID value="a"/>
+            </ID>
+            <MulOp>
+              <ID>
+                <LeafID value="b"/>
+              </ID>
+              <ID>
+                <LeafID value="c"/>
+              </ID>
+            </MulOp>
+          </AddOp>
+        </IdInitOp>
+      </VarDeclOp>
+    </VarDeclList>
     <StatList/>
   </BodyOp>
 </ProgramOp>

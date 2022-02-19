@@ -8,6 +8,7 @@ import support.ValueType;
 import java.util.ArrayList;
 import java.util.Stack;
 
+//Visitor per la gestione dell'analisi semantica
 
 public class SemanticVisitor implements ISemanticVisitor {
 

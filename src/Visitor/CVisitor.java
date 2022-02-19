@@ -8,13 +8,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+//Visitor per la generazione di codice intermedio (C)
 
 public class CVisitor implements ICVisitor {
 
     private PrintWriter writer;
-    private String actualFunName = "";
-    private String actualName = "";
-    ArrayList<String> outParName = null;
+    ArrayList<String> outParName = null; //ArrayList per gestire i parametri di output di fun
     public static String FILE_NAME = "c_gen.c";
     private static File FILE;
 
@@ -91,6 +90,7 @@ public class CVisitor implements ICVisitor {
             for (VarDeclNode declNodo : node.nodeArrayList) {
                 declNodo.accept(this);
             }
+            writer.print("\n");
         }
 
         //ArrayList<FunNode>
@@ -205,7 +205,6 @@ public class CVisitor implements ICVisitor {
             ((LeafRealConst) constNode.value1).accept(this);
         } else {
             ((LeafBool) constNode.value1).accept(this);
-            //constNode.setType(((LeafBool) constNode.value1).type);
         }
     }
 
@@ -601,7 +600,5 @@ public class CVisitor implements ICVisitor {
         } else {
             writer.print("\"\"");
         }
-
     }
-
 }
