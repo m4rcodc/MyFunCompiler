@@ -1,0 +1,40 @@
+Scegli l'operazione da svolgere per continuare
+	(1) Somma di due numeri
+	(2) Moltiplicazione di due numeri
+	(3) Divisione intera fra due numeri positivi
+	(4) Elevamento a potenza
+	(5) Successione di Fibonacci (ricorsiva)
+	(6) Successione di Fibonacci (iterativa)
+	(0) Esci
+--> 
+(4) POTENZA
+
+Inserisci la base: Inserisci l'esponente: 
+La potenza di 2.000000 elevato a 3.000000 vale 8.000000
+Vuoi continuare? (s/n) --> Scegli l'operazione da svolgere per continuare
+	(1) Somma di due numeri
+	(2) Moltiplicazione di due numeri
+	(3) Divisione intera fra due numeri positivi
+	(4) Elevamento a potenza
+	(5) Successione di Fibonacci (ricorsiva)
+	(6) Successione di Fibonacci (iterativa)
+	(0) Esci
+--> 
+(5) FIBONACCI
+
+Inserisci n: 
+Il numero di Fibonacci in posizione 5 vale 3
+Vuoi continuare? (s/n) --> Scegli l'operazione da svolgere per continuare
+	(1) Somma di due numeri
+	(2) Moltiplicazione di due numeri
+	(3) Divisione intera fra due numeri positivi
+	(4) Elevamento a potenza
+	(5) Successione di Fibonacci (ricorsiva)
+	(6) Successione di Fibonacci (iterativa)
+	(0) Esci
+--> 
+(6) FIBONACCI
+
+Inserisci n: 
+Il numero di Fibonacci in posizione 12 vale 89
+Vuoi continuare? (s/n) --> 

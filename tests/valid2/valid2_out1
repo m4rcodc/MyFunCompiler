@@ -1,0 +1,48 @@
+Scegli l'operazione da svolgere per continuare
+	(1) Somma di due numeri
+	(2) Moltiplicazione di due numeri
+	(3) Divisione intera fra due numeri positivi
+	(4) Elevamento a potenza
+	(5) Successione di Fibonacci (ricorsiva)
+	(6) Successione di Fibonacci (iterativa)
+	(0) Esci
+--> 
+(1) SOMMA
+
+Inserisci il primo operando: Inserisci il secondo operando: 
+La somma tra 1.000000 e 232.000000 vale 233.000000
+Vuoi continuare? (s/n) --> Scegli l'operazione da svolgere per continuare
+	(1) Somma di due numeri
+	(2) Moltiplicazione di due numeri
+	(3) Divisione intera fra due numeri positivi
+	(4) Elevamento a potenza
+	(5) Successione di Fibonacci (ricorsiva)
+	(6) Successione di Fibonacci (iterativa)
+	(0) Esci
+--> 
+(2) MOLTIPLICAZIONE
+
+Inserisci il primo operando: Inserisci il secondo operando: 
+La moltiplicazione tra 12.000000 e 3.000000 vale 36.000000
+Vuoi continuare? (s/n) --> Scegli l'operazione da svolgere per continuare
+	(1) Somma di due numeri
+	(2) Moltiplicazione di due numeri
+	(3) Divisione intera fra due numeri positivi
+	(4) Elevamento a potenza
+	(5) Successione di Fibonacci (ricorsiva)
+	(6) Successione di Fibonacci (iterativa)
+	(0) Esci
+--> 
+(3) DIVISIONE INTERA
+
+Inserisci il primo operando: Inserisci il secondo operando: 
+La divisione intera tra 12 e 3 vale 4
+Vuoi continuare? (s/n) --> Scegli l'operazione da svolgere per continuare
+	(1) Somma di due numeri
+	(2) Moltiplicazione di due numeri
+	(3) Divisione intera fra due numeri positivi
+	(4) Elevamento a potenza
+	(5) Successione di Fibonacci (ricorsiva)
+	(6) Successione di Fibonacci (iterativa)
+	(0) Esci
+--> 

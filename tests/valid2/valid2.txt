@@ -1,0 +1,128 @@
+fun print_menu(): integer
+    integer choose;
+    ?. "Scegli l'operazione da svolgere per continuare";
+    ?. '\t(1) Somma di due numeri';
+    ?. '\t(2) Moltiplicazione di due numeri';
+    ?. '\t(3) Divisione intera fra due numeri positivi';
+    ?. '\t(4) Elevamento a potenza';
+    ?. '\t(5) Successione di Fibonacci (ricorsiva)';
+    ?. '\t(6) Successione di Fibonacci (iterativa)';
+    ?. '\t(0) Esci';
+    % choose '--> ';
+    return choose;
+end fun;
+
+fun do_sum()
+    real op1, op2;
+    ?. '\n(1) SOMMA\n';
+    % op1 'Inserisci il primo operando: ';
+    % op2 'Inserisci il secondo operando: ';
+    ?. '';
+    ?. 'La somma tra ' & op1 & ' e ' & op2 & ' vale ' & op1 + op2;
+end fun;
+
+fun do_mul()
+    real op1, op2;
+    ?. '\n(2) MOLTIPLICAZIONE';
+    % op1 '\nInserisci il primo operando: ';
+    % op2 'Inserisci il secondo operando: ';
+    ?. '';
+    ?. 'La moltiplicazione tra ' & op1 & ' e ' & op2 & ' vale ' & op1 * op2;
+end fun;
+
+fun do_div_int()
+    integer op1, op2;
+    ?. '\n(3) DIVISIONE INTERA';
+    % op1 '\nInserisci il primo operando: ';
+    % op2 'Inserisci il secondo operando: ';
+    ?. '';
+    ?. 'La divisione intera tra ' & op1 & ' e ' & op2 & ' vale ' & op1 div op2;
+end fun;
+
+fun do_pow()
+    real op1, op2;
+    ?. '\n(4) POTENZA';
+    % op1 '\nInserisci la base: ';
+    % op2 "Inserisci l'esponente: ";
+    ?. '';
+    ?. 'La potenza di ' & op1 & ' elevato a ' & op2 & ' vale ' & op1 ^ op2;
+end fun;
+
+fun recursive_fib(integer n): integer
+    if n = 1 then
+        return 0;
+    end if;
+    if n = 2 then
+        return 1;
+    end if;
+    return recursive_fib(n - 1) + recursive_fib(n - 2);
+end fun;
+
+fun iterative_fib(integer n): integer
+    if n = 1 then
+        return 0;
+    end if;
+    if n = 2 then
+        return 1;
+    end if;
+    if n > 2 then
+        integer i := 3, res := 1, prev := 0;
+        while i <= n loop
+            integer tmp := res;
+            res := res + prev;
+            prev := tmp;
+            i := i + 1;
+        end loop;
+        return res;
+    end if;
+    return -1;
+end fun;
+
+fun do_fib(bool recursive)
+    integer n;
+    string message;
+    ?. '\n(5) FIBONACCI';
+    % n '\nInserisci n: ';
+    ?. '';
+    message := 'Il numero di Fibonacci in posizione ' & n & ' vale ';
+    if recursive then
+        message := message & recursive_fib(n);
+    else
+        message := message & iterative_fib(n);
+    end if;
+    ?. message;
+end fun;
+
+fun do_operation(integer choose)
+    if choose = 1 then do_sum();
+    else if choose = 2 then do_mul();
+    else if choose = 3 then do_div_int();
+    else if choose = 4 then do_pow();
+    else if choose = 5 then do_fib(true);
+    else if choose = 6 then do_fib(false);
+    end if;end if;end if;end if;end if;end if;
+end fun;
+
+fun print_continua(out bool continua)
+    string in;
+    % in 'Vuoi continuare? (s/n) --> ';
+    if in = 's' then
+        continua := true;
+    else
+        continua := false;
+    end if;
+end fun;
+
+main
+    var choose := 0, continua := true;
+
+    while continua loop
+        choose := print_menu();
+        if choose = 0 then
+            continua := false;
+        else
+            do_operation(choose);
+            print_continua(@continua);
+        end if;
+    end loop;
+end main;
