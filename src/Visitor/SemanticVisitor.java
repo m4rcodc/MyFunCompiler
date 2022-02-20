@@ -327,7 +327,7 @@ public class SemanticVisitor implements ISemanticVisitor {
         }
 
         */
-        //Rimuovo la symbol table dallo stack
+        //Rimuovo la symboltable dallo stack
         stack.pop();
     }
 
@@ -483,13 +483,13 @@ public class SemanticVisitor implements ISemanticVisitor {
 
     }
 
-    //Controllo se l'espressione da stampare è una stringa
     public void visit(WriteStatNode node) {
 
         node.expr.accept(this);
 
     }
 
+    //Controllo sul tipo di ritorno della funzione
     public void visit(ReturnStatNode node) {
         //Controllo il tipo dell'espressione del return
         node.expr.accept(this);
@@ -568,8 +568,8 @@ public class SemanticVisitor implements ISemanticVisitor {
             node.setType(symbolTableEntry.returnFunParam);
         }
     }
-    //Mancano ancora POWOP e STRCONCAT
-    //Controllo dei tipi sugli operatori matematici: MUL,ADD,DIFF,DIV,DIVINT,POWOP
+
+    //Controllo dei tipi sugli operatori matematici: TIMES,ADD,DIFF,DIV,DIVINT,POWOP
     //Controllo dei tipi su AND e OR
     //Controllo dei tipi sugli operatori relazionali: LT,LE,GT,GE,EQ,NE
     //Controllo dei tipi sugli operatori unari: Uminus e NotOp
@@ -580,7 +580,7 @@ public class SemanticVisitor implements ISemanticVisitor {
             ((ExprNode) exprNode.value1).accept(this);//Queste due visite mi settano il type dei due 5 ad integer
             ((ExprNode) exprNode.value2).accept(this);
 
-            //Addizione,Sottrazione,Moltiplicazione,Divisione
+            //Add,Diff,Times,Div,Pow
             if(
                             exprNode.name.equalsIgnoreCase("AddOp") ||
                             exprNode.name.equalsIgnoreCase("DiffOp")||

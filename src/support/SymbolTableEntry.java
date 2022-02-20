@@ -4,6 +4,7 @@ import nodes.ModeParNode;
 
 import java.util.ArrayList;
 
+//Classe entry della symbol table
 public class SymbolTableEntry {
     public String id;
     public ValueType valueType;

@@ -1,9 +1,5 @@
 package support;
-
-
-import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 import nodes.ModeParNode;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 //La symbol table è implementata con un HashMap dove il parametro String rappresenta il nome della tabella (Ad esempio "Global") e symboltableentry è l'entry della tabella
