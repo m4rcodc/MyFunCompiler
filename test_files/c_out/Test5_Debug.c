@@ -47,8 +47,8 @@ char prova[MAXCHAR] = "ciao";
 
 int main () {
 
-char* prova = malloc(sizeof(char) * MAXCHAR);
-strcpy(prova, "ciao");
+char* prova1 = malloc(sizeof(char) * MAXCHAR);
+strcpy(prova1, "ciao");
 return 0;
 
 }

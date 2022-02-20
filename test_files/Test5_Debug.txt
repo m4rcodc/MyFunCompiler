@@ -2,6 +2,6 @@ string prova := "ciao";
 
 main
 
-string prova := "ciao";
+string prova1 := "ciao";
 
 end main;
