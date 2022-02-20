@@ -17,7 +17,7 @@
       <VarDeclOp>
         <StringOp type="STRING"/>
         <IdInitOp>
-          <LeafID value="prova"/>
+          <LeafID value="prova1"/>
           <STRING_CONST>
             <LeafStringConst value="ciao"/>
           </STRING_CONST>
