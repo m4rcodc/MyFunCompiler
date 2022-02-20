@@ -43,15 +43,12 @@ return concat;
 }
 
 //Dichiarazione variabili globali
-char* a = malloc(sizeof(char) * MAXCHAR);
-strcpy(a, "ciao");
+char prova[MAXCHAR] = "ciao";
 
 int main () {
 
-int a = 2;
-int b = 3;
-int c = 6;
-int d = a + b * c;
+char* prova = malloc(sizeof(char) * MAXCHAR);
+strcpy(prova, "ciao");
 return 0;
 
 }

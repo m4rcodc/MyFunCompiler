@@ -43,8 +43,8 @@ return concat;
 }
 
 //Dichiarazione variabili globali
-int c = 1;
-int d = 2;
+int c=1;
+int d=2;
 
 
 //Fun sommac

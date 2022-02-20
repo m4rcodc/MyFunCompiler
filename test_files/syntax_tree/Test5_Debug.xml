@@ -2,62 +2,25 @@
 <ProgramOp>
   <VarDeclList>
     <VarDeclOp>
-      <VarOp type="VAR"/>
-      <IdInitOpObbl>
-        <LeafID value="a"/>
+      <StringOp type="STRING"/>
+      <IdInitOp>
+        <LeafID value="prova"/>
         <STRING_CONST>
           <LeafStringConst value="ciao"/>
         </STRING_CONST>
-      </IdInitOpObbl>
+      </IdInitOp>
     </VarDeclOp>
   </VarDeclList>
   <FunList/>
   <BodyOp>
     <VarDeclList>
       <VarDeclOp>
-        <IntOp type="INTEGER"/>
+        <StringOp type="STRING"/>
         <IdInitOp>
-          <LeafID value="a"/>
-          <INTEGER_CONST>
-            <LeafIntegerConst value="2"/>
-          </INTEGER_CONST>
-        </IdInitOp>
-      </VarDeclOp>
-      <VarDeclOp>
-        <VarOp type="VAR"/>
-        <IdInitOpObbl>
-          <LeafID value="b"/>
-          <INTEGER_CONST>
-            <LeafIntegerConst value="3"/>
-          </INTEGER_CONST>
-        </IdInitOpObbl>
-      </VarDeclOp>
-      <VarDeclOp>
-        <IntOp type="INTEGER"/>
-        <IdInitOp>
-          <LeafID value="c"/>
-          <INTEGER_CONST>
-            <LeafIntegerConst value="6"/>
-          </INTEGER_CONST>
-        </IdInitOp>
-      </VarDeclOp>
-      <VarDeclOp>
-        <IntOp type="INTEGER"/>
-        <IdInitOp>
-          <LeafID value="d"/>
-          <AddOp>
-            <ID>
-              <LeafID value="a"/>
-            </ID>
-            <MulOp>
-              <ID>
-                <LeafID value="b"/>
-              </ID>
-              <ID>
-                <LeafID value="c"/>
-              </ID>
-            </MulOp>
-          </AddOp>
+          <LeafID value="prova"/>
+          <STRING_CONST>
+            <LeafStringConst value="ciao"/>
+          </STRING_CONST>
         </IdInitOp>
       </VarDeclOp>
     </VarDeclList>

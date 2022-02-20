@@ -1,4 +1,5 @@
 package Visitor;
+import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 import nodes.*;
 import leafs.*;
 import support.SymbolTable;
@@ -16,6 +17,7 @@ public class CVisitor implements ICVisitor {
     ArrayList<String> outParName = null; //ArrayList per gestire i parametri di output di fun
     public static String FILE_NAME = "c_gen.c";
     private static File FILE;
+    boolean flag = false;
 
     public CVisitor() throws IOException {
         /*int lastIndex = name.lastIndexOf(File.separator);
@@ -85,11 +87,13 @@ public class CVisitor implements ICVisitor {
         //ArrayList<VarDeclNode>
         if (node.nodeArrayList != null) {
             if (node.nodeArrayList.size() != 0) {
+                flag = true;
                 writer.println("//Dichiarazione variabili globali");
             }
             for (VarDeclNode declNodo : node.nodeArrayList) {
                 declNodo.accept(this);
             }
+            flag = false;
             writer.print("\n");
         }
 
@@ -146,10 +150,13 @@ public class CVisitor implements ICVisitor {
             writer.print("int ");
         } else if (SymbolTable.StringToType(node.type) == ValueType.Real) {
             writer.print("double ");
-        } else if (SymbolTable.StringToType(node.type) == ValueType.String) {
+        } else if (SymbolTable.StringToType(node.type) == ValueType.String && !flag) {
             writer.print("char* ");
         } else if (SymbolTable.StringToType(node.type) == ValueType.Bool) {
             writer.print("bool ");
+        }
+        else if(SymbolTable.StringToType(node.type) == ValueType.String && flag){
+            writer.print("char ");
         }
     }
 
@@ -158,37 +165,66 @@ public class CVisitor implements ICVisitor {
         //LeafID
         node.leaf.accept(this);
 
-        if (node.type == ValueType.String) {
-            writer.print(" = malloc(sizeof(char) * MAXCHAR)");
-        }
-
-
-        //ExprNode
-        if (node.expr != null) {
-            if (node.type == ValueType.String) {
-                writer.print(";\n");
-                writer.print("strcpy(");
-                node.leaf.accept(this);
-                writer.print(", ");
-                node.expr.accept(this);
-                writer.print(")");
-            } else {
-                writer.print(" = ");
-                node.expr.accept(this);
+        if(flag){
+            if(node.type == ValueType.String){
+                writer.print("[MAXCHAR]");
             }
+            if(node.expr != null){
+                if(node.type == ValueType.String){
+                    writer.print(" = ");
+                    node.expr.accept(this);
+                }
+                else {
+                    writer.print("=");
+                    node.expr.accept(this);
+                }
+            }
+            if(node.c != null){
+                if(node.type == ValueType.String){
+                    writer.print(" = ");
+                    node.c.accept(this);
+                }
+                else {
+                    writer.print("=");
+                    node.c.accept(this);
+                }
+            }
+           // flag = false;
         }
-        //ConstNode (VAR)
-        if (node.c != null) {
+        else {
+
             if (node.type == ValueType.String) {
-                writer.print(";\n");
-                writer.print("strcpy(");
-                node.leaf.accept(this);
-                writer.print(", ");
-                node.c.accept(this);
-                writer.print(")");
-            } else {
-                writer.print(" = ");
-                node.c.accept(this);
+                writer.print(" = malloc(sizeof(char) * MAXCHAR)");
+            }
+
+
+            //ExprNode
+            if (node.expr != null) {
+                if (node.type == ValueType.String) {
+                    writer.print(";\n");
+                    writer.print("strcpy(");
+                    node.leaf.accept(this);
+                    writer.print(", ");
+                    node.expr.accept(this);
+                    writer.print(")");
+                } else {
+                    writer.print(" = ");
+                    node.expr.accept(this);
+                }
+            }
+            //ConstNode (VAR)
+            if (node.c != null) {
+                if (node.type == ValueType.String) {
+                    writer.print(";\n");
+                    writer.print("strcpy(");
+                    node.leaf.accept(this);
+                    writer.print(", ");
+                    node.c.accept(this);
+                    writer.print(")");
+                } else {
+                    writer.print(" = ");
+                    node.c.accept(this);
+                }
             }
         }
 

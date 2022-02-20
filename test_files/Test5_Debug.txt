@@ -1,10 +1,7 @@
-var a := "ciao";
+string prova := "ciao";
 
 main
 
-integer a := 2;
-var b := 3;
-integer c := 6;
-integer d := a + (b * c);
+string prova := "ciao";
 
 end main;
