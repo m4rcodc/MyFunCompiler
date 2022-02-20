@@ -32,7 +32,7 @@
     </dependencies>
     <build>
         <sourceDirectory>
-            src
+            delle-cave-mutone_es5_scg/src
         </sourceDirectory>
         <plugins>
             <plugin>
