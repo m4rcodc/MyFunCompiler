@@ -33,7 +33,7 @@
 
     <build>
         <sourceDirectory>
-            Delle Cave-Mutone_es5_scg\src
+            src
         </sourceDirectory>
         <plugins>
             <plugin>
