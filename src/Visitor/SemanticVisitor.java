@@ -13,6 +13,7 @@ import java.util.Stack;
 public class SemanticVisitor implements ISemanticVisitor {
 
     public Stack<SymbolTable> stack = new Stack<>();
+    //flag per gestire la dichiarazione delle variabili globali
     boolean flag = false;
 
     public void visit(ProgramNode programNode) {
@@ -97,11 +98,7 @@ public class SemanticVisitor implements ISemanticVisitor {
                         System.err.println("Semantic error: Cannot declare a variable with ID:" + idInitNode.leaf.value + ". There is a function with same ID.");
                         System.exit(1);
                     }
-                }/*else if (symbolTableEntry != null && symbolTableEntry.valueType.equals(ValueType.Var)) {
-                        ValueType type = idInitNode.c.type;
-                        symbolTableEntry.valueType = type;
-                        picked.createEntry_variable(idInitNode.leaf.value,varDeclNode.type.type);
-                    }*/
+                }
                     if(idInitNode.name.equalsIgnoreCase("IdInitOp")){
                         idInitNode.type = SymbolTable.StringToType(varDeclNode.type.type);
                         if(!picked.createEntry_variable(idInitNode.leaf.value,varDeclNode.type.type)){
@@ -120,44 +117,7 @@ public class SemanticVisitor implements ISemanticVisitor {
                         }
                         idInitNode.accept(this);
                     }
-                    //Altrimenti se la variabile non è presente nello scope attuale la inserisco nello scope corrente
-                    //Caso in cui la variabile non è inizializzata
-                    /*if(!picked.createEntry_variable(idInitNode.leaf.value,varDeclNode.type.type)){
-                        System.err.println("Semantic error in " + stack.peek().symbolTableName + ": identifier " + idInitNode.leaf.value +" already declared in the actual scope");
-                        System.exit(1);
-                    }
-
-                    //Gestisco l'inferenza per il tipo VAR
-                    if(varDeclNode.type.type.equalsIgnoreCase("Var")){
-                        idInitNode.accept(this);
-                        SymbolTableEntry symbolTableEntry = picked.containsEntry(idInitNode.leaf.value);
-                        if(symbolTableEntry == null){
-                            System.err.println("Semantic error: variable " + idInitNode.leaf.value + " is not declared");
-                            System.exit(1);
-                        }
-                        symbolTableEntry.setValueType(idInitNode.type);
-
-                    }
-
-                    else {
-                        idInitNode.accept(this);
-                        idInitNode.setType(varDeclNode.type.type);
-                    }
-
-
-                    //varDeclNode.setType(idInitNode.type.toString());
-
-                //Gestisco il caso in cui la variabile dichiarata è inizializzata (Caso non VAR)
-               /* if(!varDeclNode.type.type.equalsIgnoreCase("Var")) {
-                    idInitNode.accept(this);
-                    idInitNode.setType(varDeclNode.type.type);
-                }*/
-
-
-                //varDeclNode.setType(idInitNode.type.toString());
-          }
-
-
+             }
     }
 
     public void visit(TypeNode node) {
@@ -257,22 +217,6 @@ public class SemanticVisitor implements ISemanticVisitor {
             }
 
 
-        //Se la funzione non c'è già nel type environment posso continuare, ovvero creo una nuova tabella,cioè un nuovo scope dove gestisco i parametri e il body della funzione
-        /*SymbolTable symbolTable = new SymbolTable(funNode.leaf.value);
-        symbolTable.setFatherSymTab(stack.firstElement());
-        stack.push(symbolTable);*/
-
-        //Gestisco l'aggiunta dei parametri all'interno dello scope della funzione
-       /* if(funNode.pardecl != null) {
-            for(ParDeclNode parDeclNode : funNode.pardecl) {
-                parDeclNode.accept(this);
-
-            }
-        }*/
-
-        //Gestisco il body della funzione
-        //funNode.bodyNode.name = "FunBody";
-        //funNode.bodyNode.accept(this);
         if(funNode.pardecl != null){
             for(ParDeclNode parDeclNode : funNode.pardecl){
                 parDeclNode.accept(this);
@@ -308,25 +252,6 @@ public class SemanticVisitor implements ISemanticVisitor {
             System.exit(1);
         }
 
-
-        //Controllo sul tipo di ritorno della funzione, ovvero se la funzione è void non deve tornare niente, se la funzione torna un int, il return stat node deve essere di tipo int ecc
-        /*ValueType returnType = null;
-        for(StatNode statNode : funNode.bodyNode.stats.statList){
-
-            if(statNode instanceof ReturnStatNode){
-                returnType =  ((ReturnStatNode) statNode).expr.type;
-            }
-        }
-
-        //Controllo nel caso di funzione void
-        if(outType.equals(ValueType.Void)){
-            if(returnType != null){
-                System.err.println("Semantic error: function " + funNode.leaf.value + " must be void.");
-                System.exit(1);
-            }
-        }
-
-        */
         //Rimuovo la symboltable dallo stack
         stack.pop();
     }
@@ -337,14 +262,10 @@ public class SemanticVisitor implements ISemanticVisitor {
     //Il lessema del parametro
     public void visit(ParDeclNode node) {
 
-        //Modalità di input del parametro
-        //node.mod.accept(this);
 
         //Tipo del parametro
         node.typeNode.accept(this);
 
-        //Lessema del parametro (nome)
-        //node.leaf.accept(this);
 
             SymbolTable picked = stack.peek();
             SymbolTableEntry symbolTableEntry = picked.getFatherSymTab().get(node.leaf.value);
@@ -363,7 +284,6 @@ public class SemanticVisitor implements ISemanticVisitor {
 
     public void visit(ModeParNode node) {
 
-            //node.getMode();
 
     }
 

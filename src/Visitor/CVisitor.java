@@ -19,15 +19,6 @@ public class CVisitor implements ICVisitor {
     boolean flag = false;
 
     public CVisitor() throws IOException {
-        /*int lastIndex = name.lastIndexOf(File.separator);
-
-        File file = new File("test_files" + File.separator + "c_out" + File.separator + name.substring(lastIndex, name.length() - 4) + ".c");
-        if (file.exists()) {
-            file.delete();
-        }
-        file.createNewFile();
-        System.out.print("File " + file.getName() + " creato nella cartella \"test_files" + File.separator + "c_out\" !!!");
-        */
         // Inizializzo il file di scrittura
         if (!(new File("test_files" + File.separator + "c_out" + File.separator)).exists()) {
             Files.createDirectory(Paths.get("test_files" + File.separator + "c_out" + File.separator));
@@ -188,7 +179,6 @@ public class CVisitor implements ICVisitor {
                     node.c.accept(this);
                 }
             }
-           // flag = false;
         }
         else {
 
