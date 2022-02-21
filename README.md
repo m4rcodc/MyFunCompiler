@@ -4,8 +4,8 @@ Il seguente documento contiene la specifica del linguaggio MyFun implementato al
 
 ### Configurazione utilizzata in IntelliJ:
 
-- Project SDK: **1.8 (version 1.8.0_292)**
-- Project Language Level: **SDK Default (8 - Lambadas, type annotations etc.)**
+- Project SDK: **17 (version 17.0.2)**
+- Project Language Level: **SDK Default**
 - Maven: **Non utilizzato**
 
 **GENERAZIONE PARSER,LEXER E JAR:** Si consiglia di utilizzare le configurazioni fornite in IntelliJ.

@@ -1,7 +1,0 @@
-string prova := "ciao";
-
-main
-
-string prova1 := "ciao";
-
-end main;

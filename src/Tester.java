@@ -3,12 +3,11 @@ import Visitor.SemanticVisitor;
 import Visitor.SyntaxVisitor;
 import java_cup.runtime.Symbol;
 import nodes.ProgramNode;
-import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-//pr
+
 public class Tester {
     public static void main(String[] args) throws Exception {
 
