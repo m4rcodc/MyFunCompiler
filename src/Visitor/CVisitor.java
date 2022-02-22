@@ -127,6 +127,10 @@ public class CVisitor implements ICVisitor {
 
             //TypeNode
             node.type.accept(this);
+            //Gestione caso specifico per le variabili globali di tipo stringa
+            if(flag && SymbolTable.StringToType(node.type.type) == ValueType.String){
+                writer.print("char ");
+            }
 
             //IdInitNode
             idInitNode.accept(this);
@@ -144,9 +148,6 @@ public class CVisitor implements ICVisitor {
             writer.print("char* ");
         } else if (SymbolTable.StringToType(node.type) == ValueType.Bool) {
             writer.print("bool ");
-        }
-        else if(SymbolTable.StringToType(node.type) == ValueType.String && flag){
-            writer.print("char ");
         }
     }
 

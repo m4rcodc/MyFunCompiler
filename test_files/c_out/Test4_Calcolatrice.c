@@ -152,7 +152,7 @@ lp = false;
 }
 printf("%s\n", "");
 printf("\n");
-printf("%s\n", "Grazie di aver utilizzato questo programma :>");
+printf("%s\n", "Grazie di aver utilizzato questo programma ");
 return 0;
 
 }

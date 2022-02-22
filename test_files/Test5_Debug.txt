@@ -1,0 +1,7 @@
+var a := "ciao", b := "prova";
+
+main
+
+var a := "a tutti";
+
+end main;

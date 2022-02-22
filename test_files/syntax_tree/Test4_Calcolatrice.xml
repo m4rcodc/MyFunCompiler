@@ -612,7 +612,7 @@
       <WriteOp>
         <write/>
         <STRING_CONST>
-          <LeafStringConst value="Grazie di aver utilizzato questo programma :&gt;"/>
+          <LeafStringConst value="Grazie di aver utilizzato questo programma "/>
         </STRING_CONST>
       </WriteOp>
     </StatList>

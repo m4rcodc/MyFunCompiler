@@ -105,6 +105,6 @@ main
 	end loop;
 
 	?. '';
-	? 'Grazie di aver utilizzato questo programma :>';
+	? 'Grazie di aver utilizzato questo programma ';
 
 end main;
