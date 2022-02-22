@@ -1,35 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <ProgramOp>
-  <VarDeclList>
-    <VarDeclOp>
-      <VarOp type="VAR"/>
-      <IdInitOpObbl>
-        <LeafID value="a"/>
-        <STRING_CONST>
-          <LeafStringConst value="ciao"/>
-        </STRING_CONST>
-      </IdInitOpObbl>
-      <IdInitOpObbl>
-        <LeafID value="b"/>
-        <STRING_CONST>
-          <LeafStringConst value="prova"/>
-        </STRING_CONST>
-      </IdInitOpObbl>
-    </VarDeclOp>
-  </VarDeclList>
-  <FunList/>
-  <BodyOp>
-    <VarDeclList>
-      <VarDeclOp>
-        <VarOp type="VAR"/>
-        <IdInitOpObbl>
+  <VarDeclList/>
+  <FunList>
+    <FunOp>
+      <LeafID value="prova"/>
+      <ParamsList>
+        <ParDeclOp>
+          <ModeOp>
+            <in/>
+          </ModeOp>
+          <IntOp type="INTEGER"/>
           <LeafID value="a"/>
-          <STRING_CONST>
-            <LeafStringConst value="a tutti"/>
-          </STRING_CONST>
-        </IdInitOpObbl>
-      </VarDeclOp>
-    </VarDeclList>
+        </ParDeclOp>
+      </ParamsList>
+      <BodyOp>
+        <VarDeclList>
+          <VarDeclOp>
+            <StringOp type="STRING"/>
+            <IdInitOp>
+              <LeafID value="a"/>
+              <STRING_CONST>
+                <LeafStringConst value="ciao"/>
+              </STRING_CONST>
+            </IdInitOp>
+          </VarDeclOp>
+        </VarDeclList>
+        <StatList/>
+      </BodyOp>
+    </FunOp>
+  </FunList>
+  <BodyOp>
+    <VarDeclList/>
     <StatList/>
   </BodyOp>
 </ProgramOp>

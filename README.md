@@ -14,17 +14,10 @@ Il seguente documento contiene la specifica del linguaggio MyFun implementato al
 
 **NB:** Il file Test2_Valid2.txt (equivalente di Valid2.txt) è stato modificato rispetto alla versione originale (variabile continue (parola chiave del linguaggio C) modificata in flagContinue).
 
-Indice dei contenuti:
-
-- [Analisi Lessicale](#analisi-lessicale)
-- [Analisi Sintattica](#analisi-sintattica)
-- [Analisi Semantica e Generazione del Codice Intermedio](#analisi-semantica-e-generazione-del-codice-intermedio)
-- [Bug Noti e Scelte Progettuali Fatte](#bug-noti-e-scelte-progettuali-fatte)
 
 ## Analisi Lessicale
 
 Per l'analisi lessicale si è utilizzato **JFLEX**, per la generazione automatica del **LEXER**, le specifiche necessarie sono state inserite all'interno del file **fun.flex**.
-
 
 
 ### Parole chiave

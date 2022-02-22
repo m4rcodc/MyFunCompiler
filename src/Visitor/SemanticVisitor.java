@@ -738,7 +738,7 @@ public class SemanticVisitor implements ISemanticVisitor {
             return null;
     }
 
-    //Semantic check per gli operatori binarI: EQ,NE
+    //Semantic check per gli operatori binari: EQ,NE
     public static ValueType getType_EQ_NE(ValueType type1, ValueType type2){
         if(type1 == ValueType.Integer && type2 == ValueType.Integer)
             return ValueType.Bool;
