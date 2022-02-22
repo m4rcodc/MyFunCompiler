@@ -10,9 +10,19 @@
             <in/>
           </ModeOp>
           <IntOp type="INTEGER"/>
-          <LeafID value="a"/>
+          <LeafID value="value1"/>
+        </ParDeclOp>
+        <ParDeclOp>
+          <ModeOp>
+            <out/>
+          </ModeOp>
+          <StringOp type="STRING"/>
+          <LeafID value="value2"/>
         </ParDeclOp>
       </ParamsList>
+      <ReturnFunType>
+        <IntOp type="INTEGER"/>
+      </ReturnFunType>
       <BodyOp>
         <VarDeclList>
           <VarDeclOp>
@@ -24,13 +34,63 @@
               </STRING_CONST>
             </IdInitOp>
           </VarDeclOp>
+          <VarDeclOp>
+            <IntOp type="INTEGER"/>
+            <IdInitOp>
+              <LeafID value="b"/>
+              <INTEGER_CONST>
+                <LeafIntegerConst value="2"/>
+              </INTEGER_CONST>
+            </IdInitOp>
+          </VarDeclOp>
         </VarDeclList>
-        <StatList/>
+        <StatList>
+          <ReturnOp>
+            <ID>
+              <LeafID value="b"/>
+            </ID>
+          </ReturnOp>
+        </StatList>
       </BodyOp>
     </FunOp>
   </FunList>
   <BodyOp>
-    <VarDeclList/>
-    <StatList/>
+    <VarDeclList>
+      <VarDeclOp>
+        <StringOp type="STRING"/>
+        <IdInitOp>
+          <LeafID value="s1"/>
+          <STRING_CONST>
+            <LeafStringConst value="ciao"/>
+          </STRING_CONST>
+        </IdInitOp>
+      </VarDeclOp>
+    </VarDeclList>
+    <StatList>
+      <WhileOp>
+        <ConditionWhile>
+          <BOOL_CONST>
+            <LeafBool value="true"/>
+          </BOOL_CONST>
+        </ConditionWhile>
+        <BodyOp>
+          <VarDeclList>
+            <VarDeclOp>
+              <StringOp type="STRING"/>
+              <IdInitOp>
+                <LeafID value="s1"/>
+              </IdInitOp>
+            </VarDeclOp>
+            <VarDeclOp>
+              <IntOp type="INTEGER"/>
+              <IdInitOp>
+                <LeafID value="s1"/>
+              </IdInitOp>
+            </VarDeclOp>
+          </VarDeclList>
+          <StatList/>
+        </BodyOp>
+      </WhileOp>
+    </StatList>
   </BodyOp>
 </ProgramOp>

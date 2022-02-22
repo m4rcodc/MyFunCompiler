@@ -1,0 +1,25 @@
+fun prova(integer value1, out string value2): integer
+
+string a := "ciao";
+
+integer b := 2;
+
+
+return b;
+
+
+end fun;
+
+
+main
+
+string s1 := "ciao";
+
+while true loop
+
+string s1;
+
+end loop;
+
+
+end main;

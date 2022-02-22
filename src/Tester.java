@@ -22,14 +22,11 @@ public class Tester {
         SyntaxVisitor syntaxVisitor = new SyntaxVisitor();
         syntaxVisitor.visit(programNode);
         syntaxVisitor.saveXML(filename.toString());
-        System.out.println("\nSyntax tree generated.");
         SemanticVisitor semanticVisitor = new SemanticVisitor();
         semanticVisitor.visit(programNode);
-        System.out.println("\nSemantic analysis completed.");
         CVisitor.FILE_NAME = filename.toString().substring(0,filename.toString().lastIndexOf('.')) + ".c";
         CVisitor cVisitor = new CVisitor();
         cVisitor.visit(programNode);
-        System.out.println("\nC code generated.");
     }
 }
 

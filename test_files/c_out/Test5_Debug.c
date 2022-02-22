@@ -42,14 +42,24 @@ strcat(concat, toConcat);
 return concat;
 }
 
-//Dichiarazione variabili globali
-char a[MAXCHAR] = "ciao";
-char b[MAXCHAR] = "prova";
+
+
+//Fun prova
+int prova(int value1, char* *value2) {
+char* a = malloc(sizeof(char) * MAXCHAR);
+strcpy(a, "ciao");
+int b = 2;
+return b;
+}
+
 
 int main () {
 
-char* a = malloc(sizeof(char) * MAXCHAR);
-strcpy(a, "a tutti");
+char* s1 = malloc(sizeof(char) * MAXCHAR);
+strcpy(s1, "ciao");
+while (true) {
+char* s1 = malloc(sizeof(char) * MAXCHAR);
+}
 return 0;
 
 }
