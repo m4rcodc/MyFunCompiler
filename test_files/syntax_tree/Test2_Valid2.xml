@@ -1133,10 +1133,9 @@
                     <CallFunOp>
                       <LeafID value="print_continue"/>
                       <ParamsList>
-                        <OutPar>
-                          <OutPar/>
+                        <ID>
                           <LeafID value="flagContinue"/>
-                        </OutPar>
+                        </ID>
                       </ParamsList>
                     </CallFunOp>
                   </StatList>
